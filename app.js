@@ -44,7 +44,7 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
-    w_tag: "Comparte el pedacito de canción que te eriza la piel.", w_create: "Crear cuenta", w_login: "Ya tengo cuenta", w_guest: "Entrar sin cuenta",
+    w_tag: "¿Qué andas escuchando? 🎧", w_create: "Crear cuenta", w_login: "Ya tengo cuenta", w_guest: "Entrar sin cuenta",
     w_start: "Empezar", w_terms: "Al continuar aceptas la", w_privacy: "política de privacidad",
     w_f1: "🎧 Fragmentos de 15 s", w_f2: "🏆 Tu Top 10 de cada mes", w_f3: "💌 Dedícale canciones a tus amigos",
     m_feliz: "Feliz", m_nostalgia: "Nostalgia", m_fiesta: "Fiesta", m_amor: "Amor", m_desamor: "Desamor", m_calma: "Calma", m_energia: "Energía", m_motivacion: "Motivación",
@@ -71,7 +71,7 @@ const DICT = {
     find: "Buscar", find_ph: "Busca personas por nombre o @usuario", find_new: "Recién llegados a Coro", find_none: "No encontramos a nadie con ese nombre",
     follow: "Seguir", following_btn: "Siguiendo", followers: "seguidores", following: "siguiendo", for_you: "Para ti", feed_following: "Siguiendo",
     empty_following: "Aún no sigues a nadie. Busca a tus amigos y síguelos para ver aquí su música.", find_friends: "Buscar amigos",
-    hero: "Comparte el pedacito de canción que te eriza la piel.", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
+    hero: "¿Qué andas escuchando? 🎧", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
@@ -112,7 +112,7 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
-    w_tag: "Share the bit of a song that gives you chills.", w_create: "Create account", w_login: "I have an account", w_guest: "Continue without an account",
+    w_tag: "What are you listening to? 🎧", w_create: "Create account", w_login: "I have an account", w_guest: "Continue without an account",
     w_start: "Start", w_terms: "By continuing you accept the", w_privacy: "privacy policy",
     w_f1: "🎧 15-second snippets", w_f2: "🏆 Your Top 10 every month", w_f3: "💌 Dedicate songs to friends",
     m_feliz: "Happy", m_nostalgia: "Nostalgia", m_fiesta: "Party", m_amor: "Love", m_desamor: "Heartbreak", m_calma: "Calm", m_energia: "Energy", m_motivacion: "Motivation",
@@ -139,7 +139,7 @@ const DICT = {
     find: "Search", find_ph: "Search people by name or @username", find_new: "New on Coro", find_none: "Nobody found with that name",
     follow: "Follow", following_btn: "Following", followers: "followers", following: "following", for_you: "For you", feed_following: "Following",
     empty_following: "You don't follow anyone yet. Find your friends and follow them to see their music here.", find_friends: "Find friends",
-    hero: "Share the bit of a song that gives you chills.", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
+    hero: "What are you listening to? 🎧", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
