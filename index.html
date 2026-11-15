@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://itunes.apple.com; connect-src 'self' https://itunes.apple.com https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.mzstatic.com; media-src https://*.apple.com https://*.mzstatic.com; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://itunes.apple.com; connect-src 'self' https://itunes.apple.com https://*.supabase.co wss://*.supabase.co; img-src 'self' data: blob: https://*.mzstatic.com https://*.supabase.co; media-src https://*.apple.com https://*.mzstatic.com; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0f0c1d">
 <meta name="description" content="Coro: la red social para compartir fragmentos de canciones y tu top de favoritas.">
@@ -74,6 +74,16 @@ nav.bottom svg{width:24px;height:24px;fill:currentColor}
 nav.bottom a.plus svg{width:30px;height:30px;color:var(--accent)}
 .avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
 .avatar.big{width:84px;height:84px;font-size:32px}
+img.avatar{object-fit:cover;background:var(--card2);box-shadow:0 0 0 2px var(--accent)}
+.avatar.sm{width:30px;height:30px;font-size:13px}
+.comments{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.comment{display:flex;gap:8px;align-items:flex-start}
+.comment .text{font-size:15px}
+.bell{position:relative}
+.bell.dot::after{content:"";position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg)}
+.danger{border-color:color-mix(in srgb,#ff4d4d 45%,var(--line))}
+.ico-inline svg{width:18px;height:18px;fill:currentColor;vertical-align:-3px}
+.act-ico{font-size:20px}
 .top-list{counter-reset:n;display:flex;flex-direction:column;gap:8px}
 .top-list .track::before{counter-increment:n;content:counter(n);font-weight:900;font-size:26px;width:30px;text-align:center;background:linear-gradient(180deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic}
 .tabs{display:flex;gap:8px;margin-bottom:14px}

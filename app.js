@@ -44,6 +44,14 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
+    photo: "Foto de perfil", photo_pick: "Elegir foto", photo_remove: "Quitar foto", photo_bad: "Esa imagen no se pudo usar. Prueba con otra (JPG o PNG)",
+    comments: "Comentarios", comment_ph: "Escribe un comentario…", send: "Enviar", no_comments: "Sé la primera persona en comentar.",
+    activity: "Actividad", act_follow: "empezó a seguirte", act_like: "le dio me gusta a tu fragmento de {s}", act_comment: "comentó en {s}:",
+    act_empty: "Aquí verás quién te sigue, comenta o da me gusta.", act_local: "La actividad aparece cuando la app está conectada a Supabase.",
+    block: "Bloquear", unblock: "Desbloquear", block_confirm: "¿Bloquear a @{u}? No verás su música y no podrá seguirte ni comentarte.",
+    blocked: "Bloqueaste a esta persona.", danger: "Zona de cuidado", del_account: "Borrar mi cuenta",
+    del_account_sub: "Se borra tu perfil, tus publicaciones, tops, álbumes y comentarios. No se puede deshacer.",
+    del_account_confirm: "Para confirmar, escribe tu nombre de usuario (@{u}):", del_account_done: "Tu cuenta fue borrada. ¡Gracias por haber sido parte de Coro!",
     find: "Buscar", find_ph: "Busca personas por nombre o @usuario", find_new: "Recién llegados a Coro", find_none: "No encontramos a nadie con ese nombre",
     follow: "Seguir", following_btn: "Siguiendo", followers: "seguidores", following: "siguiendo", for_you: "Para ti", feed_following: "Siguiendo",
     empty_following: "Aún no sigues a nadie. Busca a tus amigos y síguelos para ver aquí su música.", find_friends: "Buscar amigos",
@@ -88,6 +96,14 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
+    photo: "Profile photo", photo_pick: "Choose photo", photo_remove: "Remove photo", photo_bad: "That image couldn't be used. Try another one (JPG or PNG)",
+    comments: "Comments", comment_ph: "Write a comment…", send: "Send", no_comments: "Be the first to comment.",
+    activity: "Activity", act_follow: "started following you", act_like: "liked your snippet of {s}", act_comment: "commented on {s}:",
+    act_empty: "Here you'll see who follows, comments or likes.", act_local: "Activity shows up when the app is connected to Supabase.",
+    block: "Block", unblock: "Unblock", block_confirm: "Block @{u}? You won't see their music and they can't follow or comment on you.",
+    blocked: "You blocked this person.", danger: "Careful zone", del_account: "Delete my account",
+    del_account_sub: "Deletes your profile, posts, tops, albums and comments. This can't be undone.",
+    del_account_confirm: "To confirm, type your username (@{u}):", del_account_done: "Your account was deleted. Thanks for being part of Coro!",
     find: "Search", find_ph: "Search people by name or @username", find_new: "New on Coro", find_none: "Nobody found with that name",
     follow: "Follow", following_btn: "Following", followers: "followers", following: "following", for_you: "For you", feed_following: "Following",
     empty_following: "You don't follow anyone yet. Find your friends and follow them to see their music here.", find_friends: "Find friends",
@@ -138,6 +154,9 @@ const ICON = {
   user: '<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><path d="M19.4 13a7.6 7.6 0 000-2l2.1-1.6-2-3.5-2.5 1a7.7 7.7 0 00-1.7-1L15 3h-4l-.4 2.7a7.7 7.7 0 00-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 000 2l-2.1 1.6 2 3.5 2.5-1a7.7 7.7 0 001.7 1L11 21h4l.4-2.7a7.7 7.7 0 001.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" transform="translate(-1 0)"/></svg>',
   note: '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1011 17.5V8h7V3z"/></svg>',
+  chat: '<svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>',
+  bell: '<svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm7-6V11a7 7 0 00-5.5-6.8V3h-3v1.2A7 7 0 005 11v5l-2 2v1h18v-1z"/></svg>',
+  camera: '<svg viewBox="0 0 24 24"><path d="M9 4l-1.5 2H4v14h16V6h-3.5L15 4zm3 4.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9z"/></svg>',
   search: '<svg viewBox="0 0 24 24"><path d="M10 3a7 7 0 015.6 11.2l5.1 5.1-1.4 1.4-5.1-5.1A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>',
   mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3l2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>'
 };
@@ -148,7 +167,7 @@ function friendly(e) {
     [/invalid login credentials/i, "Correo o contraseña incorrectos"], [/email not confirmed/i, "Confirma tu correo primero (revisa tu bandeja y spam)"],
     [/already registered|already been registered/i, "Ese correo ya tiene cuenta. Toca \"Entrar\""], [/password should be at least/i, "La contraseña debe tener al menos 8 caracteres"],
     [/rate limit|too many/i, "Demasiados intentos. Espera un momento"], [/anonymous sign-ins are disabled/i, "Entrar sin cuenta aún no está activado"],
-    [/provider is not enabled|unsupported provider/i, "Esa forma de entrar aún no está activada"], [/album limit/i, "Llegaste al máximo de 30 álbumes"], [/follow limit/i, "Has seguido a muchas personas hoy. Intenta mañana"],
+    [/provider is not enabled|unsupported provider/i, "Esa forma de entrar aún no está activada"], [/album limit/i, "Llegaste al máximo de 30 álbumes"], [/follow limit/i, "Has seguido a muchas personas hoy. Intenta mañana"], [/comment limit/i, "Has comentado mucho hoy. Intenta mañana"], [/row-level security|permission denied/i, "No se puede hacer eso"],
     [/failed to fetch|networkerror|load failed/i, "Sin conexión. Revisa tu internet"], [/invalid email|unable to validate email/i, "Ese correo no parece válido"]
   ] : [[/album limit/i, "You reached the 30 album limit"], [/failed to fetch|networkerror|load failed/i, "No connection. Check your internet"]];
   for (const [re, txt] of map) if (re.test(m)) return txt;
@@ -163,10 +182,27 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.remove(), 2600);
 }
 function hue(s) { let x = 0; for (const c of String(s)) x = (x * 31 + c.charCodeAt(0)) >>> 0; return x % 360; }
-function avatar(user, big) {
+const SAFE_AVATAR = /^(data:image\/jpeg;base64,[a-z0-9+/=]+|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/avatars\/[a-f0-9-]+\/avatar\.jpg(\?v=\d+)?)$/i;
+function avatar(user, size) {
   const name = user.display_name || user.username || "?";
-  return h("div", { class: "avatar" + (big ? " big" : ""), style: `background:hsl(${hue(user.username)} 65% 45%)`, "aria-hidden": "true" }, name.trim()[0]?.toUpperCase() || "?");
+  const cls = "avatar" + (size === true || size === "big" ? " big" : size === "sm" ? " sm" : "");
+  if (user.avatar_url && SAFE_AVATAR.test(user.avatar_url))
+    return h("img", { class: cls, src: user.avatar_url, alt: "", loading: "lazy", decoding: "async" });
+  return h("div", { class: cls, style: `background:hsl(${hue(user.username)} 65% 45%)`, "aria-hidden": "true" }, name.trim()[0]?.toUpperCase() || "?");
 }
+// Recorta al centro y reduce la foto a 320×320 JPEG (rápida de cargar, sin datos de ubicación)
+async function squareJpeg(file, size = 320) {
+  if (!/^image\//.test(file.type) || file.size > 15e6) throw new Error(t("photo_bad"));
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const m = Math.min(img.naturalWidth, img.naturalHeight);
+    const c = document.createElement("canvas"); c.width = c.height = size;
+    c.getContext("2d").drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, size, size);
+    return await new Promise(res => c.toBlob(res, "image/jpeg", 0.85));
+  } catch { throw new Error(t("photo_bad")); } finally { URL.revokeObjectURL(url); }
+}
+const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
 const rtf = new Intl.RelativeTimeFormat(LANG, { numeric: "auto" });
 function ago(iso) {
   const s = (new Date(iso) - Date.now()) / 1000;
@@ -366,10 +402,10 @@ function LocalStore() {
   const KEY = "coro_demo_v1";
   let db; try { db = JSON.parse(localStorage.getItem(KEY)); } catch {}
   db ||= { me: null, posts: [], likes: {}, tops: {}, albums: [] };
-  db.albums ||= [];
+  db.albums ||= []; db.comments ||= {};
   if (!db.tops) { db.tops = {}; if (db.top?.length) db.tops[monthKey()] = db.top; delete db.top; } // datos de la versión anterior
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
-  const decorate = p => ({ ...p, user: db.me, likes: db.likes[p.id] ? 1 : 0, liked: !!db.likes[p.id] });
+  const decorate = p => ({ ...p, user: db.me, likes: db.likes[p.id] ? 1 : 0, liked: !!db.likes[p.id], comments: (db.comments[p.id] || []).length });
   return {
     mode: "local",
     async session() { return db.me ? { id: "local" } : null; },
@@ -377,6 +413,14 @@ function LocalStore() {
     async saveProfile(p) { db.me = { id: "local", ...db.me, ...p }; save(); return db.me; },
     async profileByUsername(u) { return db.me && db.me.username === u ? db.me : null; },
     async feed() { return db.posts.map(decorate); },
+    async uploadAvatar(blob) { db.me.avatar_url = await blobToDataUrl(blob); save(); return db.me.avatar_url; },
+    async removeAvatar() { delete db.me.avatar_url; save(); },
+    async comments(postId) { return (db.comments[postId] || []).map(c => ({ ...c, user: db.me })); },
+    async addComment(postId, text) { (db.comments[postId] ||= []).push({ id: Date.now(), post_id: postId, user_id: "local", text, created_at: new Date().toISOString() }); save(); },
+    async deleteComment(id) { for (const k in db.comments) db.comments[k] = db.comments[k].filter(c => c.id !== id); save(); },
+    async activity() { return null; },
+    async blockedIds() { return new Set(); }, async block() {}, async unblock() {},
+    async deleteAccount() { try { localStorage.removeItem(KEY); } catch {} db = { me: null, posts: [], likes: {}, tops: {}, albums: [], comments: {} }; },
     async searchUsers(q) { q = (q || "").toLowerCase(); return db.me && (!q || db.me.username.includes(q) || (db.me.display_name || "").toLowerCase().includes(q)) ? [db.me] : []; },
     async counts() { return { followers: 0, following: 0 }; },
     async isFollowing() { return false; },
@@ -416,7 +460,7 @@ async function CloudStore(cfg) {
     id: r.id, text: r.text, clip_start: r.clip_start, created_at: r.created_at,
     track: { id: r.track_id, name: r.track_name, artist: r.artist_name, art: r.artwork_url, preview: r.preview_url, url: r.track_url },
     user: r.profiles ? { id: r.user_id, ...r.profiles } : { id: r.user_id },
-    likes: r.likes?.[0]?.count || 0, liked: mine.has(r.id)
+    likes: r.likes?.[0]?.count || 0, liked: mine.has(r.id), comments: r.comments?.[0]?.count || 0
   });
   const err = e => { if (e) { const x = new Error(e.message); x.code = e.code; throw x; } };
   async function withLikes(rows) {
@@ -425,9 +469,12 @@ async function CloudStore(cfg) {
       const { data } = await sb.from("likes").select("post_id").eq("user_id", id).in("post_id", rows.map(r => r.id));
       mine = new Set((data || []).map(x => x.post_id));
     }
-    return rows.map(r => fromRow(r, mine));
+    const blocked = await store.blockedIds();
+    return rows.filter(r => !blocked.has(r.user_id)).map(r => fromRow(r, mine));
   }
-  const POST_SEL = "id,user_id,text,track_id,track_name,artist_name,artwork_url,preview_url,track_url,clip_start,created_at,profiles(username,display_name),likes(count)";
+  const POST_SEL = "id,user_id,text,track_id,track_name,artist_name,artwork_url,preview_url,track_url,clip_start,created_at,profiles(username,display_name,avatar_url),likes(count),comments(count)";
+  const PROF = "username,display_name,avatar_url";
+  let blockedCache = null;
   const store = {
     mode: "cloud", sb,
     async session() { return (await sb.auth.getSession()).data.session; },
@@ -455,11 +502,72 @@ async function CloudStore(cfg) {
       }
       const { data, error } = await q; err(error); return withLikes(data);
     },
+    async uploadAvatar(blob) {
+      const id = await uid(), path = id + "/avatar.jpg";
+      const { error } = await sb.storage.from("avatars").upload(path, blob, { upsert: true, contentType: "image/jpeg", cacheControl: "3600" }); err(error);
+      const url = sb.storage.from("avatars").getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
+      const { error: e2 } = await sb.from("profiles").update({ avatar_url: url }).eq("id", id); err(e2);
+      if (meCache) meCache.avatar_url = url; return url;
+    },
+    async removeAvatar() {
+      const id = await uid();
+      await sb.storage.from("avatars").remove([id + "/avatar.jpg"]);
+      const { error } = await sb.from("profiles").update({ avatar_url: null }).eq("id", id); err(error);
+      if (meCache) meCache.avatar_url = null;
+    },
+    async comments(postId) {
+      const { data, error } = await sb.from("comments").select(`id,post_id,user_id,text,created_at,profiles(${PROF})`).eq("post_id", postId).order("created_at").limit(200); err(error);
+      const blocked = await store.blockedIds();
+      return (data || []).filter(c => !blocked.has(c.user_id)).map(c => ({ ...c, user: { id: c.user_id, ...c.profiles } }));
+    },
+    async addComment(postId, text) { const { error } = await sb.from("comments").insert({ post_id: postId, text }); err(error); },
+    async deleteComment(id) { const { error } = await sb.from("comments").delete().eq("id", id); err(error); },
+    async activity() {
+      const id = await uid(); if (!id) return [];
+      const [f, l, c] = await Promise.all([
+        sb.from("follows").select(`created_at,follower,profiles!follows_follower_fkey(${PROF})`).eq("followee", id).order("created_at", { ascending: false }).limit(30),
+        sb.from("likes").select(`created_at,user_id,profiles(${PROF}),posts!inner(user_id,track_name)`).eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(30),
+        sb.from("comments").select(`created_at,user_id,text,post_id,profiles(${PROF}),posts!inner(user_id,track_name)`).eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(30)]);
+      err(f.error || l.error || c.error);
+      const blocked = await store.blockedIds();
+      return [
+        ...(f.data || []).map(x => ({ kind: "follow", at: x.created_at, uid: x.follower, user: x.profiles })),
+        ...(l.data || []).map(x => ({ kind: "like", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.posts?.track_name })),
+        ...(c.data || []).map(x => ({ kind: "comment", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.posts?.track_name, text: x.text }))
+      ].filter(x => x.user && !blocked.has(x.uid)).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 50);
+    },
+    async lastActivityAt() {
+      const id = await uid(); if (!id) return null;
+      const [f, c] = await Promise.all([
+        sb.from("follows").select("created_at").eq("followee", id).order("created_at", { ascending: false }).limit(1),
+        sb.from("comments").select("created_at,posts!inner(user_id)").eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(1)]);
+      return [f.data?.[0]?.created_at, c.data?.[0]?.created_at].filter(Boolean).sort().pop() || null;
+    },
+    async blockedIds() {
+      if (blockedCache) return blockedCache;
+      const id = await uid(); if (!id) return new Set();
+      const { data } = await sb.from("blocks").select("blocked").eq("blocker", id).limit(1000);
+      return (blockedCache = new Set((data || []).map(x => x.blocked)));
+    },
+    async block(userId) {
+      const id = await uid();
+      const { error } = await sb.from("blocks").insert({ blocked: userId }); if (error?.code !== "23505") err(error);
+      await sb.from("follows").delete().eq("follower", id).eq("followee", userId);
+      blockedCache = null;
+    },
+    async unblock(userId) { const id = await uid(); const { error } = await sb.from("blocks").delete().eq("blocker", id).eq("blocked", userId); err(error); blockedCache = null; },
+    async deleteAccount() {
+      const id = await uid();
+      await sb.storage.from("avatars").remove([id + "/avatar.jpg"]).catch(() => {});
+      const { error } = await sb.rpc("delete_my_account"); err(error);
+      await sb.auth.signOut().catch(() => {}); meCache = null;
+    },
     async searchUsers(term) {
       const q = clean(term, 40).toLowerCase().replace(/^@/, "").replace(/[^a-z0-9_ áéíóúüñ.-]/gi, "");
-      let req = sb.from("profiles").select("id,username,display_name,bio,country,theme").limit(25);
+      let req = sb.from("profiles").select("id,username,display_name,bio,country,theme,avatar_url").limit(25);
       req = q ? req.or(`username.ilike.%${q.replace(/[ ]/g, "_")}%,display_name.ilike.%${q}%`) : req.order("created_at", { ascending: false });
-      const { data, error } = await req; err(error); return data || [];
+      const { data, error } = await req; err(error);
+      const blocked = await store.blockedIds(); return (data || []).filter(x => !blocked.has(x.id));
     },
     async counts(userId) {
       const [a, b] = await Promise.all([
@@ -512,7 +620,7 @@ async function CloudStore(cfg) {
     async authName() { const m = (await sb.auth.getSession()).data.session?.user?.user_metadata || {}; return clean(m.full_name || m.name || "", 40); },
     async signOut() { await sb.auth.signOut(); meCache = null; }
   };
-  sb.auth.onAuthStateChange(() => { meCache = undefined; });
+  sb.auth.onAuthStateChange(() => { meCache = undefined; blockedCache = null; });
   return store;
 }
 
@@ -533,7 +641,9 @@ function renderNav(me) {
   const hdr = document.getElementById("hdr");
   const snd = h("button", { class: "icon-btn", "aria-label": t("sounds"), "aria-pressed": String(sfx.on), html: sfx.on ? ICON.note : ICON.mute });
   snd.onclick = () => { sfx.set(!sfx.on); snd.innerHTML = sfx.on ? ICON.note : ICON.mute; snd.setAttribute("aria-pressed", String(sfx.on)); toast(t("sounds") + ": " + (sfx.on ? t("on") : t("off"))); };
-  hdr.replaceChildren(snd, h("a", { class: "icon-btn", href: "#/ajustes", "aria-label": t("settings"), html: ICON.gear }));
+  const bell = me && S.mode === "cloud" ? h("a", { class: "icon-btn bell", href: "#/actividad", "aria-label": t("activity"), html: ICON.bell }) : null;
+  if (bell && S.lastActivityAt) S.lastActivityAt().then(at => { let seen = ""; try { seen = localStorage.getItem("coro_seen") || ""; } catch {} if (at && at > seen) bell.classList.add("dot"); }).catch(() => {});
+  hdr.replaceChildren(...[bell, snd, h("a", { class: "icon-btn", href: "#/ajustes", "aria-label": t("settings"), html: ICON.gear })].filter(Boolean));
   if (S.mode === "cloud") {
     hdr.append(me || state.session
       ? h("button", { class: "icon-btn", onclick: async () => { await S.signOut(); state.session = null; location.hash = "#/"; route(); } }, t("logout"))
@@ -551,7 +661,13 @@ function postCard(p, me, onChange) {
       likeBtn.classList.toggle("on", p.liked); likeBtn.setAttribute("aria-pressed", String(p.liked)); likeBtn.lastChild.textContent = p.likes; }
     catch { toast(t("error")); }
   };
-  const actions = [likeBtn];
+  const box = h("div", { class: "comments", hidden: true });
+  const cBtn = h("button", { class: "icon-btn", "aria-label": t("comments"), "aria-expanded": "false" }, h("span", { html: ICON.chat }), h("span", null, String(p.comments || 0)));
+  cBtn.onclick = () => {
+    const open = box.hidden; box.hidden = !open; cBtn.setAttribute("aria-expanded", String(open));
+    if (open) commentsBox(box, p, me, n => { p.comments = n; cBtn.lastChild.textContent = n; });
+  };
+  const actions = [likeBtn, cBtn];
   if (mine) actions.push(h("button", { class: "icon-btn", "aria-label": t("del"), "data-sfx": "down", onclick: async () => {
     if (!confirm(t("confirm_del"))) return;
     try { await S.deletePost(p.id); toast(t("deleted")); onChange?.(); } catch { toast(t("error")); }
@@ -569,7 +685,53 @@ function postCard(p, me, onChange) {
         h("div", { class: "muted small" }, "@" + (p.user.username || "") + " · " + ago(p.created_at)))),
     p.text ? h("p", { class: "text" }, p.text) : h("div", { style: "height:10px" }),
     trackRow(p.track, { start: p.clip_start, link: true, clipLabel: true }),
-    h("div", { class: "actions" }, ...actions));
+    h("div", { class: "actions" }, ...actions), box);
+}
+
+async function commentsBox(box, post, me, onCount) {
+  box.replaceChildren(h("div", { class: "muted small" }, "…"));
+  const list = h("div", { class: "col", style: "gap:8px" });
+  const draw = async () => {
+    try {
+      const cs = await S.comments(post.id);
+      onCount(cs.length);
+      list.replaceChildren(...(cs.length ? cs.map(c => h("div", { class: "comment" }, avatar(c.user, "sm"),
+        h("div", { style: "flex:1;min-width:0" },
+          h("div", { class: "small" }, h("a", { class: "author", href: "#/u/" + (c.user.username || "") }, c.user.display_name || c.user.username || "—"), h("span", { class: "muted" }, " · " + ago(c.created_at))),
+          h("div", { class: "text", style: "margin:2px 0 0" }, c.text)),
+        me && (c.user_id === me.id || post.user.id === me.id) ? h("button", { class: "icon-btn", "data-sfx": "down", "aria-label": t("del"), onclick: async () => { try { await S.deleteComment(c.id); draw(); } catch (e) { toast(friendly(e)); } } }, "✕") : null))
+        : [h("div", { class: "muted small" }, t("no_comments"))]));
+    } catch (e) { list.replaceChildren(h("div", { class: "muted small" }, friendly(e))); }
+  };
+  const input = h("input", { type: "text", maxlength: 200, placeholder: t("comment_ph"), "aria-label": t("comment_ph"), enterkeyhint: "send" });
+  const send = h("button", { class: "btn", "data-sfx": "ok", style: "padding:9px 16px" }, t("send"));
+  const go = async () => {
+    const txt = clean(input.value, 200); if (!txt) return;
+    send.disabled = true;
+    try { await S.addComment(post.id, txt); input.value = ""; await draw(); } catch (e) { toast(friendly(e)); }
+    send.disabled = false;
+  };
+  send.onclick = go; input.addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+  box.replaceChildren(list, me ? h("div", { class: "row", style: "gap:8px" }, input, send) : h("a", { class: "muted small", href: "#/yo" }, t("login_needed")));
+  await draw();
+}
+
+async function viewActivity(me) {
+  if (!me) return needProfile();
+  const list = await S.activity();
+  try { localStorage.setItem("coro_seen", new Date().toISOString()); } catch {}
+  document.querySelector(".bell")?.classList.remove("dot");
+  if (list === null) return $app.replaceChildren(h("div", { class: "empty" }, t("act_local")));
+  $app.replaceChildren(h("h2", { style: "margin:4px 4px 12px" }, t("activity")),
+    list.length ? h("div", { class: "card col", style: "gap:2px" }, ...list.map(x => h("a", { class: "user-row", href: "#/u/" + x.user.username, style: "text-decoration:none" },
+      avatar(x.user),
+      h("div", { style: "flex:1;min-width:0" },
+        h("div", null, h("b", null, x.user.display_name || x.user.username), " ",
+          x.kind === "follow" ? t("act_follow") : x.kind === "like" ? t("act_like", { s: x.song || "" }) : t("act_comment", { s: x.song || "" })),
+        x.text ? h("div", { class: "muted small", style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, "“" + x.text + "”") : null,
+        h("div", { class: "muted small" }, ago(x.at))),
+      h("span", { class: "act-ico", "aria-hidden": "true" }, x.kind === "follow" ? "👋" : x.kind === "like" ? "❤️" : "💬"))))
+    : h("div", { class: "empty" }, t("act_empty")));
 }
 
 async function viewFeed(me) {
@@ -688,10 +850,32 @@ async function viewEdit(me, first) {
       toast(t("saved")); location.hash = "#/u/" + p.username;
     } catch (e) { toast(friendly(e)); save.disabled = false; }
   };
+  const photoBox = h("div", { class: "row" });
+  const drawPhoto = () => {
+    const file = h("input", { type: "file", accept: "image/*", hidden: true });
+    file.onchange = async () => {
+      const f = file.files[0]; if (!f) return;
+      try { const blob = await squareJpeg(f); toast("…"); await S.uploadAvatar(blob); me = await S.me(); toast(t("saved")); drawPhoto(); renderNav(me); }
+      catch (e) { toast(friendly(e)); }
+    };
+    photoBox.replaceChildren(avatar(me || { username: u.value || "?" }, true), file,
+      h("div", { class: "col", style: "gap:6px" },
+        h("button", { class: "btn ghost", type: "button", onclick: () => file.click() }, h("span", { html: ICON.camera, class: "ico-inline" }), " " + t("photo_pick")),
+        me?.avatar_url ? h("button", { class: "icon-btn", type: "button", "data-sfx": "down", onclick: async () => { try { await S.removeAvatar(); me = await S.me(); drawPhoto(); } catch (e) { toast(friendly(e)); } } }, t("photo_remove")) : null));
+  };
+  if (!first) drawPhoto();
   const parts = [h("div", { class: "card col" },
     h("h2", { style: "margin:0" }, first ? t("welcome") : t("edit")),
     first ? h("div", { class: "muted" }, t("welcome_sub")) : null,
+    first ? null : h("label", null, t("photo")), first ? null : photoBox,
     h("label", null, t("username")), u, h("label", null, t("display")), d, h("label", null, t("bio")), b, h("label", null, t("country")), c, save)];
+  if (!first) parts.push(h("div", { class: "card col danger" },
+    h("h3", { style: "margin:0" }, t("danger")), h("div", { class: "muted small" }, t("del_account_sub")),
+    h("button", { class: "btn ghost", "data-sfx": "down", onclick: async () => {
+      const typed = prompt(t("del_account_confirm", { u: me.username }));
+      if (typed === null || typed.trim().replace(/^@/, "").toLowerCase() !== me.username) return;
+      try { await S.deleteAccount(); state.session = null; toast(t("del_account_done")); location.hash = "#/"; route(); } catch (e) { toast(friendly(e)); }
+    } }, t("del_account"))));
   $app.replaceChildren(...parts);
 }
 
@@ -912,7 +1096,14 @@ async function viewProfile(me, username, wantMonth, tab) {
       isMe ? h("div", { class: "row", style: "margin-top:8px;flex-wrap:wrap;gap:8px" },
         h("a", { class: "btn", href: "#/top", style: "text-decoration:none" }, t("my_top")),
         h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null);
-  if (fb) head.append(h("div", { style: "margin-top:10px" }, fb));
+  let isBlocked = false;
+  if (!isMe && me && S.mode === "cloud") isBlocked = (await S.blockedIds()).has(p.id);
+  const blockBtn = !isMe && me && S.mode === "cloud" ? h("button", { class: "icon-btn small", "data-sfx": "down", onclick: async () => {
+    if (!isBlocked && !confirm(t("block_confirm", { u: p.username }))) return;
+    try { if (isBlocked) await S.unblock(p.id); else await S.block(p.id); route(); } catch (e) { toast(friendly(e)); }
+  } }, isBlocked ? t("unblock") : t("block")) : null;
+  if (fb || blockBtn) head.append(h("div", { class: "row", style: "margin-top:10px;justify-content:space-between" }, isBlocked ? h("span", { class: "muted small" }, t("blocked")) : fb, blockBtn));
+  if (isBlocked) { $app.replaceChildren(head); return; }
   if (!isMe) applyVars(head, p.theme); // el perfil de cada persona se ve con SUS colores
   $app.replaceChildren(head, tabs, content);
   show(tab === "albums" ? 1 : 0);
@@ -975,6 +1166,7 @@ async function route() {
     if (hash === "#/top") return await viewTopEditor(me);
     if (hash === "#/ajustes") return await viewSettings(me);
     if (hash === "#/buscar") return await viewSearch(me);
+    if (hash === "#/actividad") return await viewActivity(me);
     if (hash.startsWith("#/album/")) return await viewAlbumEditor(me, hash.slice(8));
     if (hash.startsWith("#/u/")) {
       const [u, m, id] = hash.slice(4).split("/");

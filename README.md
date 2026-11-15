@@ -22,6 +22,7 @@ que ya tienen licencia, y cada canción enlaza a "Escuchar completa".
 - Solo se aceptan audios e imágenes de servidores oficiales de Apple.
 
 ## Más funciones
+- **Foto de perfil** (se recorta y reduce sola), **comentarios**, **actividad** (🔔: quién te sigue, comenta o da me gusta), **bloquear** y **borrar mi cuenta**.
 - **Seguir a amigos** y **buscar personas** (⌕ en la barra de abajo). En Inicio puedes ver "Para ti" (todo) o solo "Siguiendo".
 - **Álbumes de recomendación** en el perfil (hasta 25 canciones, portada con emoji, nota y enlace a tu playlist de Spotify, Apple Music, YouTube Music, Deezer…).
 - **Colores a tu manera**: 8 paletas o combina fondo + 2 colores. Tu perfil se ve con tus colores para quien lo visite.
