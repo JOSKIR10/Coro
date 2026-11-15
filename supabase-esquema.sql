@@ -79,6 +79,17 @@ create table if not exists public.albums (
 );
 create index if not exists albums_user_idx on public.albums (user_id, updated_at desc);
 
+-- Seguir a otras personas
+create table if not exists public.follows (
+  follower uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  followee uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (follower, followee),
+  check (follower <> followee)
+);
+create index if not exists follows_followee_idx on public.follows (followee);
+create index if not exists profiles_created_idx on public.profiles (created_at desc);
+
 -- Reportes (solo los ve la administradora desde el panel de Supabase)
 create table if not exists public.reports (
   id bigint generated always as identity primary key,
@@ -98,6 +109,8 @@ alter table public.reports   enable row level security;
 
 alter table public.albums    enable row level security;
 
+alter table public.follows   enable row level security;
+
 -- Lectura pública
 drop policy if exists "perfiles visibles" on public.profiles;
 create policy "perfiles visibles" on public.profiles for select using (true);
@@ -110,6 +123,9 @@ create policy "tops visibles" on public.top_songs for select using (true);
 
 drop policy if exists "albumes visibles" on public.albums;
 create policy "albumes visibles" on public.albums for select using (true);
+
+drop policy if exists "seguidores visibles" on public.follows;
+create policy "seguidores visibles" on public.follows for select using (true);
 
 -- Escritura solo de lo propio
 drop policy if exists "crear mi perfil" on public.profiles;
@@ -130,6 +146,10 @@ drop policy if exists "editar mi album" on public.albums;
 create policy "editar mi album" on public.albums for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 drop policy if exists "borrar mi album" on public.albums;
 create policy "borrar mi album" on public.albums for delete to authenticated using (user_id = auth.uid());
+drop policy if exists "seguir" on public.follows;
+create policy "seguir" on public.follows for insert to authenticated with check (follower = auth.uid());
+drop policy if exists "dejar de seguir" on public.follows;
+create policy "dejar de seguir" on public.follows for delete to authenticated using (follower = auth.uid());
 drop policy if exists "reportar" on public.reports;
 create policy "reportar" on public.reports for insert to authenticated with check (reporter = auth.uid());
 
@@ -156,6 +176,18 @@ begin
 end $$;
 drop trigger if exists albums_limit on public.albums;
 create trigger albums_limit before insert on public.albums for each row execute function public.albums_limit();
+
+-- Anti-spam: máximo 200 "seguir" nuevos por día por persona
+create or replace function public.follows_rate_limit() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.follows where follower = new.follower and created_at > now() - interval '1 day') >= 200 then
+    raise exception 'follow limit reached';
+  end if;
+  return new;
+end $$;
+drop trigger if exists follows_rate_limit on public.follows;
+create trigger follows_rate_limit before insert on public.follows for each row execute function public.follows_rate_limit();
 
 -- Guardar el Top 10 de un mes de una vez (reemplaza el de ese mes).
 -- Solo se puede editar el mes en curso (con 1 día de margen por las zonas horarias):

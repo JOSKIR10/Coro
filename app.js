@@ -44,6 +44,9 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
+    find: "Buscar", find_ph: "Busca personas por nombre o @usuario", find_new: "Recién llegados a Coro", find_none: "No encontramos a nadie con ese nombre",
+    follow: "Seguir", following_btn: "Siguiendo", followers: "seguidores", following: "siguiendo", for_you: "Para ti", feed_following: "Siguiendo",
+    empty_following: "Aún no sigues a nadie. Busca a tus amigos y síguelos para ver aquí su música.", find_friends: "Buscar amigos",
     hero: "Comparte el pedacito de canción que te eriza la piel.", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
@@ -85,6 +88,9 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
+    find: "Search", find_ph: "Search people by name or @username", find_new: "New on Coro", find_none: "Nobody found with that name",
+    follow: "Follow", following_btn: "Following", followers: "followers", following: "following", for_you: "For you", feed_following: "Following",
+    empty_following: "You don't follow anyone yet. Find your friends and follow them to see their music here.", find_friends: "Find friends",
     hero: "Share the bit of a song that gives you chills.", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
@@ -132,6 +138,7 @@ const ICON = {
   user: '<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><path d="M19.4 13a7.6 7.6 0 000-2l2.1-1.6-2-3.5-2.5 1a7.7 7.7 0 00-1.7-1L15 3h-4l-.4 2.7a7.7 7.7 0 00-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 000 2l-2.1 1.6 2 3.5 2.5-1a7.7 7.7 0 001.7 1L11 21h4l.4-2.7a7.7 7.7 0 001.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" transform="translate(-1 0)"/></svg>',
   note: '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1011 17.5V8h7V3z"/></svg>',
+  search: '<svg viewBox="0 0 24 24"><path d="M10 3a7 7 0 015.6 11.2l5.1 5.1-1.4 1.4-5.1-5.1A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>',
   mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3l2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>'
 };
 // Traduce los errores técnicos más comunes a algo que se entienda
@@ -141,7 +148,7 @@ function friendly(e) {
     [/invalid login credentials/i, "Correo o contraseña incorrectos"], [/email not confirmed/i, "Confirma tu correo primero (revisa tu bandeja y spam)"],
     [/already registered|already been registered/i, "Ese correo ya tiene cuenta. Toca \"Entrar\""], [/password should be at least/i, "La contraseña debe tener al menos 8 caracteres"],
     [/rate limit|too many/i, "Demasiados intentos. Espera un momento"], [/anonymous sign-ins are disabled/i, "Entrar sin cuenta aún no está activado"],
-    [/provider is not enabled|unsupported provider/i, "Esa forma de entrar aún no está activada"], [/album limit/i, "Llegaste al máximo de 30 álbumes"],
+    [/provider is not enabled|unsupported provider/i, "Esa forma de entrar aún no está activada"], [/album limit/i, "Llegaste al máximo de 30 álbumes"], [/follow limit/i, "Has seguido a muchas personas hoy. Intenta mañana"],
     [/failed to fetch|networkerror|load failed/i, "Sin conexión. Revisa tu internet"], [/invalid email|unable to validate email/i, "Ese correo no parece válido"]
   ] : [[/album limit/i, "You reached the 30 album limit"], [/failed to fetch|networkerror|load failed/i, "No connection. Check your internet"]];
   for (const [re, txt] of map) if (re.test(m)) return txt;
@@ -370,6 +377,10 @@ function LocalStore() {
     async saveProfile(p) { db.me = { id: "local", ...db.me, ...p }; save(); return db.me; },
     async profileByUsername(u) { return db.me && db.me.username === u ? db.me : null; },
     async feed() { return db.posts.map(decorate); },
+    async searchUsers(q) { q = (q || "").toLowerCase(); return db.me && (!q || db.me.username.includes(q) || (db.me.display_name || "").toLowerCase().includes(q)) ? [db.me] : []; },
+    async counts() { return { followers: 0, following: 0 }; },
+    async isFollowing() { return false; },
+    async follow() {}, async unfollow() {},
     async userPosts() { return db.posts.map(decorate); },
     async createPost(p) { db.posts.unshift({ id: Date.now(), ...p, created_at: new Date().toISOString() }); save(); },
     async deletePost(id) { db.posts = db.posts.filter(p => p.id !== id); delete db.likes[id]; save(); },
@@ -433,7 +444,32 @@ async function CloudStore(cfg) {
       return (meCache = data);
     },
     async profileByUsername(u) { const { data } = await sb.from("profiles").select("*").eq("username", u).maybeSingle(); return data; },
-    async feed() { const { data, error } = await sb.from("posts").select(POST_SEL).order("created_at", { ascending: false }).limit(50); err(error); return withLikes(data); },
+    async feed(scope) {
+      let q = sb.from("posts").select(POST_SEL).order("created_at", { ascending: false }).limit(50);
+      if (scope === "following") {
+        const id = await uid(); if (!id) return [];
+        const { data: f, error: fe } = await sb.from("follows").select("followee").eq("follower", id).limit(1000); err(fe);
+        const ids = (f || []).map(x => x.followee);
+        if (!ids.length) return [];
+        q = q.in("user_id", [...ids, id]);
+      }
+      const { data, error } = await q; err(error); return withLikes(data);
+    },
+    async searchUsers(term) {
+      const q = clean(term, 40).toLowerCase().replace(/^@/, "").replace(/[^a-z0-9_ áéíóúüñ.-]/gi, "");
+      let req = sb.from("profiles").select("id,username,display_name,bio,country,theme").limit(25);
+      req = q ? req.or(`username.ilike.%${q.replace(/[ ]/g, "_")}%,display_name.ilike.%${q}%`) : req.order("created_at", { ascending: false });
+      const { data, error } = await req; err(error); return data || [];
+    },
+    async counts(userId) {
+      const [a, b] = await Promise.all([
+        sb.from("follows").select("*", { count: "exact", head: true }).eq("followee", userId),
+        sb.from("follows").select("*", { count: "exact", head: true }).eq("follower", userId)]);
+      return { followers: a.count || 0, following: b.count || 0 };
+    },
+    async isFollowing(userId) { const id = await uid(); if (!id) return false; const { data } = await sb.from("follows").select("followee").eq("follower", id).eq("followee", userId).maybeSingle(); return !!data; },
+    async follow(userId) { const { error } = await sb.from("follows").insert({ followee: userId }); if (error?.code !== "23505") err(error); },
+    async unfollow(userId) { const id = await uid(); const { error } = await sb.from("follows").delete().eq("follower", id).eq("followee", userId); err(error); },
     async userPosts(userId) { const { data, error } = await sb.from("posts").select(POST_SEL).eq("user_id", userId).order("created_at", { ascending: false }).limit(50); err(error); return withLikes(data); },
     async createPost(p) {
       const { error } = await sb.from("posts").insert({ text: p.text, clip_start: p.clip_start, track_id: p.track.id, track_name: p.track.name, artist_name: p.track.artist, artwork_url: p.track.art, preview_url: p.track.preview, track_url: p.track.url });
@@ -491,6 +527,7 @@ function renderNav(me) {
   const nav = document.getElementById("nav");
   nav.replaceChildren(
     link("#/", ICON.home, t("feed")),
+    link("#/buscar", ICON.search, t("find")),
     link("#/nuevo", ICON.plus, t("new"), "plus"),
     link(me ? "#/u/" + me.username : "#/yo", ICON.user, t("me")));
   const hdr = document.getElementById("hdr");
@@ -543,11 +580,23 @@ async function viewFeed(me) {
     h("h1", null, t("hero")), h("p", { class: "muted" }, t("hero_sub")),
     h("a", { class: "btn", href: "#/yo", style: "text-decoration:none;align-self:flex-start" }, t("hero_cta"))));
   if (S.mode === "local") parts.push(h("div", { class: "banner" }, t("demo")));
+  let scope = "all";
+  try { scope = me && S.mode === "cloud" && localStorage.getItem("coro_feed") === "following" ? "following" : "all"; } catch {}
+  if (me && S.mode === "cloud") {
+    const seg = h("div", { class: "tabs", role: "tablist" });
+    const draw = () => seg.replaceChildren(...[["all", t("for_you")], ["following", t("feed_following")]].map(([k, label]) =>
+      h("button", { role: "tab", class: scope === k ? "act" : "", "aria-selected": String(scope === k), onclick: () => { scope = k; try { localStorage.setItem("coro_feed", k); } catch {} draw(); load(); } }, label)));
+    draw(); parts.push(seg);
+  }
   $app.replaceChildren(...parts, list);
   const load = async () => {
+    list.replaceChildren(h("div", { class: "empty" }, "…"));
     try {
-      const posts = await S.feed();
-      list.replaceChildren(...(posts.length ? posts.map(p => postCard(p, me, load)) : [h("div", { class: "empty" }, t("empty_feed"))]));
+      const posts = await S.feed(scope);
+      const empty = scope === "following"
+        ? h("div", { class: "empty col", style: "align-items:center" }, t("empty_following"), h("a", { class: "btn", href: "#/buscar", style: "text-decoration:none" }, t("find_friends")))
+        : h("div", { class: "empty" }, t("empty_feed"));
+      list.replaceChildren(...(posts.length ? posts.map(p => postCard(p, me, load)) : [empty]));
     } catch { list.replaceChildren(h("div", { class: "empty" }, navigator.onLine ? t("error") : t("offline"))); }
   };
   load();
@@ -753,6 +802,52 @@ async function viewSettings(me) {
   $app.replaceChildren(box);
 }
 
+function followButton(me, user, onChange) {
+  if (S.mode !== "cloud" || (me && me.id === user.id)) return null;
+  let on = false;
+  const b = h("button", { class: "btn follow", type: "button" }, t("follow"));
+  const paint = () => { b.textContent = on ? t("following_btn") : t("follow"); b.classList.toggle("ghost", on); b.setAttribute("aria-pressed", String(on)); b.dataset.sfx = on ? "down" : "like"; };
+  paint();
+  if (me) S.isFollowing(user.id).then(v => { on = v; paint(); }).catch(() => {});
+  b.onclick = async () => {
+    if (!me) { toast(t("login_needed")); return needProfile(); }
+    b.disabled = true;
+    try { if (on) await S.unfollow(user.id); else await S.follow(user.id); on = !on; paint(); onChange?.(on); }
+    catch (e) { toast(friendly(e)); }
+    b.disabled = false;
+  };
+  return b;
+}
+
+function userRow(me, u) {
+  const row = h("div", { class: "user-row" },
+    h("a", { class: "row", href: "#/u/" + u.username, style: "flex:1;min-width:0;text-decoration:none" }, avatar(u),
+      h("div", { style: "min-width:0" },
+        h("div", { class: "author", style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, u.display_name || u.username),
+        h("div", { class: "muted small", style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, "@" + u.username + (u.bio ? " · " + u.bio : "")))),
+    followButton(me, u));
+  return row;
+}
+
+async function viewSearch(me) {
+  const input = h("input", { type: "search", placeholder: t("find_ph"), "aria-label": t("find_ph"), maxlength: 40, autocomplete: "off", autocapitalize: "none" });
+  const title = h("h3", { class: "muted", style: "margin:4px 4px 10px;font-size:14px" }, t("find_new"));
+  const results = h("div", { class: "card col", style: "gap:4px" });
+  let seq = 0, timer;
+  const run = async () => {
+    const my = ++seq, q = input.value.trim();
+    title.textContent = q ? "" : t("find_new");
+    try {
+      const users = await S.searchUsers(q);
+      if (my !== seq) return;
+      results.replaceChildren(...(users.length ? users.map(u => userRow(me, u)) : [h("div", { class: "empty", style: "padding:20px" }, t("find_none"))]));
+    } catch (e) { if (my === seq) results.replaceChildren(h("div", { class: "empty" }, friendly(e))); }
+  };
+  input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 300); });
+  $app.replaceChildren(h("div", { class: "card", style: "padding:10px" }, input), title, results);
+  input.focus(); run();
+}
+
 async function viewProfile(me, username, wantMonth, tab) {
   const p = me && me.username === username ? me : await S.profileByUsername(username);
   if (!p) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
@@ -802,15 +897,22 @@ async function viewProfile(me, username, wantMonth, tab) {
     } catch { content.replaceChildren(h("div", { class: "empty" }, t("error"))); }
   };
   tabs.append(h("button", { role: "tab", onclick: () => show(0) }, t("tab_top")), h("button", { role: "tab", onclick: () => show(1) }, t("albums")), h("button", { role: "tab", onclick: () => show(2) }, t("posts")));
+  const counts = h("div", { class: "small", style: "margin-top:4px" });
+  let nums = { followers: 0, following: 0 };
+  const paintCounts = () => counts.replaceChildren(h("b", null, String(nums.followers)), " " + t("followers") + " · ", h("b", null, String(nums.following)), " " + t("following"));
+  if (S.mode === "cloud") S.counts(p.id).then(c => { nums = c; paintCounts(); }).catch(() => {});
+  const fb = isMe ? null : followButton(me, p, on => { nums.followers += on ? 1 : -1; paintCounts(); });
   const head = h("div", { class: "card profile-head" },
       h("div", { class: "row" }, avatar(p, true),
         h("div", { style: "flex:1;min-width:0" },
           h("h2", { style: "margin:0;overflow-wrap:anywhere" }, p.display_name || p.username),
-          h("div", { class: "muted" }, "@" + p.username + (p.country ? " · " + regionName(p.country) : "")))),
+          h("div", { class: "muted" }, "@" + p.username + (p.country ? " · " + regionName(p.country) : "")),
+          counts)),
       p.bio ? h("p", { class: "text" }, p.bio) : null,
       isMe ? h("div", { class: "row", style: "margin-top:8px;flex-wrap:wrap;gap:8px" },
         h("a", { class: "btn", href: "#/top", style: "text-decoration:none" }, t("my_top")),
         h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null);
+  if (fb) head.append(h("div", { style: "margin-top:10px" }, fb));
   if (!isMe) applyVars(head, p.theme); // el perfil de cada persona se ve con SUS colores
   $app.replaceChildren(head, tabs, content);
   show(tab === "albums" ? 1 : 0);
@@ -872,6 +974,7 @@ async function route() {
     if (hash === "#/editar") return me ? viewEdit(me, false) : needProfile();
     if (hash === "#/top") return await viewTopEditor(me);
     if (hash === "#/ajustes") return await viewSettings(me);
+    if (hash === "#/buscar") return await viewSearch(me);
     if (hash.startsWith("#/album/")) return await viewAlbumEditor(me, hash.slice(8));
     if (hash.startsWith("#/u/")) {
       const [u, m, id] = hash.slice(4).split("/");
