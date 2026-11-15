@@ -44,7 +44,7 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
-    w_tag: "¿Qué andas escuchando? 🎧", w_create: "Crear cuenta", w_login: "Ya tengo cuenta", w_guest: "Entrar sin cuenta",
+    w_tag: "Encuentra la música que te conecta con los demás.", w_create: "Crear cuenta", w_login: "Ya tengo cuenta", w_guest: "Entrar sin cuenta",
     w_start: "Empezar", w_terms: "Al continuar aceptas la", w_privacy: "política de privacidad",
     w_f1: "🎧 Fragmentos de 15 s", w_f2: "🏆 Tu Top 10 de cada mes", w_f3: "💌 Dedícale canciones a tus amigos",
     m_feliz: "Feliz", m_nostalgia: "Nostalgia", m_fiesta: "Fiesta", m_amor: "Amor", m_desamor: "Desamor", m_calma: "Calma", m_energia: "Energía", m_motivacion: "Motivación",
@@ -71,7 +71,7 @@ const DICT = {
     find: "Buscar", find_ph: "Busca personas por nombre o @usuario", find_new: "Recién llegados a Coro", find_none: "No encontramos a nadie con ese nombre",
     follow: "Seguir", following_btn: "Siguiendo", followers: "seguidores", following: "siguiendo", for_you: "Para ti", feed_following: "Siguiendo",
     empty_following: "Aún no sigues a nadie. Busca a tus amigos y síguelos para ver aquí su música.", find_friends: "Buscar amigos",
-    hero: "¿Qué andas escuchando? 🎧", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
+    hero: "Encuentra la música que te conecta con los demás.", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
@@ -112,7 +112,7 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
-    w_tag: "What are you listening to? 🎧", w_create: "Create account", w_login: "I have an account", w_guest: "Continue without an account",
+    w_tag: "Find the music that connects you with others.", w_create: "Create account", w_login: "I have an account", w_guest: "Continue without an account",
     w_start: "Start", w_terms: "By continuing you accept the", w_privacy: "privacy policy",
     w_f1: "🎧 15-second snippets", w_f2: "🏆 Your Top 10 every month", w_f3: "💌 Dedicate songs to friends",
     m_feliz: "Happy", m_nostalgia: "Nostalgia", m_fiesta: "Party", m_amor: "Love", m_desamor: "Heartbreak", m_calma: "Calm", m_energia: "Energy", m_motivacion: "Motivation",
@@ -139,7 +139,7 @@ const DICT = {
     find: "Search", find_ph: "Search people by name or @username", find_new: "New on Coro", find_none: "Nobody found with that name",
     follow: "Follow", following_btn: "Following", followers: "followers", following: "following", for_you: "For you", feed_following: "Following",
     empty_following: "You don't follow anyone yet. Find your friends and follow them to see their music here.", find_friends: "Find friends",
-    hero: "What are you listening to? 🎧", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
+    hero: "Find the music that connects you with others.", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
@@ -381,6 +381,51 @@ document.addEventListener("pointerdown", e => {
   if (!el || el.disabled) return;
   sfx.play(el.dataset.sfx || "tap");
 }, { capture: true, passive: true });
+// ---------- Animaciones "vivas" ----------
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NOTE_CHARS = ["♪", "♫", "♬", "♩", "𝄞"];
+// Al tocar: una notita sale del dedo y flota hacia arriba
+function noteBurst(x, y, chars = NOTE_CHARS, n = 1) {
+  if (calm()) return;
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement("span");
+    el.className = "tap-note"; el.textContent = chars[Math.floor(Math.random() * chars.length)];
+    el.style.left = x + "px"; el.style.top = y + "px";
+    el.style.setProperty("--dx", (Math.random() * 60 - 30) + "px");
+    el.style.setProperty("--rot", (Math.random() * 50 - 25) + "deg");
+    el.style.animationDelay = (i * 60) + "ms";
+    el.style.color = Math.random() > .5 ? "var(--accent)" : "var(--accent2)";
+    document.body.append(el);
+    setTimeout(() => el.remove(), 1300 + i * 60);
+  }
+}
+document.addEventListener("pointerdown", e => {
+  const el = e.target.closest("button, a, .results .track");
+  if (!el || el.disabled) return;
+  const kind = el.dataset.sfx;
+  noteBurst(e.clientX, e.clientY, kind === "like" ? ["❤", "💖", "♪"] : NOTE_CHARS, kind === "ok" || kind === "like" ? 4 : 1);
+  el.classList.remove("boing"); void el.offsetWidth; el.classList.add("boing");
+}, { passive: true });
+// Lluvia de notas que suben desde abajo (bienvenida)
+function noteRain(host) {
+  if (calm()) return () => {};
+  const spawn = () => {
+    if (!host.isConnected) return stop();
+    const el = document.createElement("span");
+    el.className = "rise-note"; el.textContent = NOTE_CHARS[Math.floor(Math.random() * NOTE_CHARS.length)];
+    el.style.left = (Math.random() * 100) + "%";
+    el.style.fontSize = (16 + Math.random() * 28) + "px";
+    el.style.setProperty("--dur", (5 + Math.random() * 5) + "s");
+    el.style.setProperty("--sway", (Math.random() * 80 - 40) + "px");
+    el.style.color = ["var(--accent)", "var(--accent2)", "var(--text)"][Math.floor(Math.random() * 3)];
+    host.append(el);
+    setTimeout(() => el.remove(), 10500);
+  };
+  for (let i = 0; i < 6; i++) setTimeout(spawn, i * 250);
+  const id = setInterval(spawn, 420);
+  const stop = () => clearInterval(id);
+  return stop;
+}
 document.addEventListener("keydown", e => { if (e.target.matches("input[type=text], input[type=search], input[type=email], textarea") && e.key.length === 1) sfx.play("soft"); }, { capture: true, passive: true });
 
 // ---------- Colores personalizables ----------
@@ -740,7 +785,8 @@ function postCard(p, me, onChange) {
   likeBtn.onclick = async () => {
     if (!me) return toast(t("login_needed"));
     try { await S.toggleLike(p); p.liked = !p.liked; p.likes += p.liked ? 1 : -1;
-      likeBtn.classList.toggle("on", p.liked); likeBtn.setAttribute("aria-pressed", String(p.liked)); likeBtn.lastChild.textContent = p.likes; }
+      likeBtn.classList.toggle("on", p.liked); likeBtn.setAttribute("aria-pressed", String(p.liked)); likeBtn.lastChild.textContent = p.likes;
+      if (p.liked) { likeBtn.classList.remove("pop"); void likeBtn.offsetWidth; likeBtn.classList.add("pop"); } }
     catch { toast(t("error")); }
   };
   const box = h("div", { class: "comments", hidden: true });
@@ -1420,7 +1466,7 @@ function viewWelcome() {
   };
   $app.replaceChildren(h("div", { class: "welcome" },
     h("div", { class: "w-orbit", "aria-hidden": "true" }, h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" })), h("span", { class: "n1" }, "♪"), h("span", { class: "n2" }, "♫"), h("span", { class: "n3" }, "♬")),
-    h("div", { class: "w-logo" }, "Coro"),
+    h("div", { class: "w-logo", "aria-label": "Coro" }, ..."Coro".split("").map((c, i) => h("span", { style: `animation-delay:${.15 + i * .09}s`, "aria-hidden": "true" }, c))),
     h("p", { class: "w-tag" }, t("w_tag")),
     h("ul", { class: "w-feats" }, h("li", null, t("w_f1")), h("li", null, t("w_f2")), h("li", null, t("w_f3"))),
     h("div", { class: "col", style: "width:100%;max-width:360px" },
@@ -1429,6 +1475,10 @@ function viewWelcome() {
       cloud ? h("a", { class: "btn ghost", href: "#/entrar", style: "text-align:center;text-decoration:none" }, t("w_login")) : null,
       cloud && guestAllowed ? h("button", { class: "icon-btn", style: "justify-content:center", onclick: guest }, t("w_guest")) : null),
     h("div", { class: "muted small", style: "text-align:center" }, t("w_terms") + " ", h("a", { href: "privacidad.html" }, t("w_privacy")), ".")));
+  const rain = h("div", { class: "note-rain", "aria-hidden": "true" });
+  $app.prepend(rain);
+  const stop = noteRain(rain);
+  window.addEventListener("hashchange", stop, { once: true });
 }
 
 function needProfile() { location.hash = S.mode === "cloud" && !state.session ? "#/entrar" : "#/yo"; }
@@ -1448,6 +1498,7 @@ async function route() {
   if (me?.theme && !theme.get() && themeVars(me.theme)) theme.set(me.theme);
   renderNav(me);
   window.scrollTo(0, 0);
+  if (!calm()) { $app.classList.remove("page-in"); void $app.offsetWidth; $app.classList.add("page-in"); }
   try {
     if (hash === "#/nuevo") return viewCompose(me);
     if (hash.startsWith("#/nuevo/para/")) return await viewCompose(me, hash.slice(13).toLowerCase());

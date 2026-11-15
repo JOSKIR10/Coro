@@ -191,6 +191,45 @@ body.welcome-mode{padding-bottom:0}
 .capsule .dots i.now{background:linear-gradient(90deg,#fff 50%,rgba(255,255,255,.3) 50%);background-size:200% 100%;animation:fill 5s linear forwards}
 @keyframes fill{from{background-position:100% 0}to{background-position:0 0}}
 .capsule .btn.ghost{background:rgba(255,255,255,.2);color:#fff}
+
+/* ---------- Animaciones vivas ---------- */
+.tap-note{position:fixed;z-index:50;pointer-events:none;font-size:20px;font-weight:700;transform:translate(-50%,-50%);animation:tapnote 1.2s cubic-bezier(.2,.7,.3,1) forwards;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+@keyframes tapnote{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-90%) scale(1.15)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-260%) rotate(var(--rot)) scale(.9)}}
+.note-rain{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.welcome{position:relative;z-index:1}
+.rise-note{position:absolute;bottom:-40px;opacity:0;animation:rise var(--dur) linear forwards;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 60%,transparent))}
+@keyframes rise{0%{opacity:0;transform:translate(0,0) rotate(0)}10%{opacity:.55}50%{transform:translate(var(--sway),-55vh) rotate(15deg)}90%{opacity:.35}100%{opacity:0;transform:translate(calc(var(--sway) * -.5),-110vh) rotate(-10deg)}}
+.w-logo{background:none;color:var(--accent)}
+.w-logo span{display:inline-block;animation:drop .7s cubic-bezier(.3,1.6,.5,1) both,wave 3s ease-in-out 1.2s infinite}
+.w-logo span:nth-child(1){color:var(--accent)}.w-logo span:nth-child(2){color:color-mix(in srgb,var(--accent) 67%,var(--accent2))}
+.w-logo span:nth-child(3){color:color-mix(in srgb,var(--accent) 33%,var(--accent2))}.w-logo span:nth-child(4){color:var(--accent2)}
+.w-logo span:nth-child(2){animation-delay:.24s,1.35s}.w-logo span:nth-child(3){animation-delay:.33s,1.5s}.w-logo span:nth-child(4){animation-delay:.42s,1.65s}
+@keyframes drop{from{opacity:0;transform:translateY(-60px) scale(.6)}}
+@keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes shine{to{background-position:200% 0}}
+.welcome>*{animation:rise-in .7s cubic-bezier(.2,.9,.3,1) both}
+.welcome>:nth-child(1){animation-delay:0s}.welcome>:nth-child(3){animation-delay:.5s}.welcome>:nth-child(4){animation-delay:.65s}.welcome>:nth-child(5){animation-delay:.8s}.welcome>:nth-child(6){animation-delay:.95s}
+.w-logo{animation:none!important}
+@keyframes rise-in{from{opacity:0;transform:translateY(24px)}}
+.welcome .btn{animation:breathe 2.6s ease-in-out 1.6s infinite}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+.page-in>*{animation:rise-in .45s cubic-bezier(.2,.9,.3,1) both}
+.page-in>:nth-child(2){animation-delay:.05s}.page-in>:nth-child(3){animation-delay:.1s}.page-in>:nth-child(4){animation-delay:.15s}.page-in>:nth-child(n+5){animation-delay:.2s}
+.boing{animation:boing .35s cubic-bezier(.3,1.8,.5,1)}
+@keyframes boing{30%{transform:scale(.9)}100%{transform:scale(1)}}
+.icon-btn.pop svg{animation:heartpop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes heartpop{0%{transform:scale(1)}40%{transform:scale(1.6) rotate(-12deg)}100%{transform:scale(1)}}
+nav.bottom a.act svg{animation:hop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes hop{40%{transform:translateY(-5px) scale(1.15)}}
+.play{transition:transform .2s}
+.track.playing .play{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}50%{box-shadow:0 0 0 9px transparent}}
+.track.playing .info .name::after{content:"";display:inline-block;width:14px;height:12px;margin-left:8px;vertical-align:middle;background:linear-gradient(var(--accent),var(--accent)) 0 100%/3px 40% no-repeat,linear-gradient(var(--accent),var(--accent)) 5px 100%/3px 90% no-repeat,linear-gradient(var(--accent),var(--accent)) 10px 100%/3px 60% no-repeat;animation:eq .8s steps(4) infinite}
+@keyframes eq{0%{background-size:3px 40%,3px 90%,3px 60%}25%{background-size:3px 90%,3px 50%,3px 30%}50%{background-size:3px 60%,3px 30%,3px 100%}75%{background-size:3px 30%,3px 100%,3px 50%}}
+.card{transition:transform .25s,box-shadow .25s}
+@media (hover:hover){.card:hover{transform:translateY(-2px);box-shadow:0 12px 30px -18px var(--accent)}}
+.toast{animation:toastin .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,20px) scale(.9)}}
 @media (max-width:420px){main{padding:12px}.track img{width:48px;height:48px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
