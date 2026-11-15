@@ -1,5 +1,6 @@
 -- Coro: base de datos segura para Supabase (plan gratis).
 -- Cómo usarlo: en Supabase abre "SQL Editor", pega TODO este archivo y pulsa "Run".
+-- Se puede volver a ejecutar sin problema cuando haya una versión nueva (actualiza sin borrar datos).
 -- Reglas de seguridad (RLS): cualquiera puede LEER publicaciones, perfiles y tops,
 -- pero cada persona solo puede crear, cambiar o borrar LO SUYO.
 
@@ -39,9 +40,10 @@ create table if not exists public.likes (
 );
 create index if not exists likes_user_idx on public.likes (user_id);
 
--- Top de canciones (máximo 10 por persona)
+-- Top 10 del mes (máximo 10 por persona y por mes; los meses pasados quedan como historial)
 create table if not exists public.top_songs (
   user_id uuid not null references public.profiles(id) on delete cascade,
+  month date not null default date_trunc('month', now())::date check (extract(day from month) = 1),
   position smallint not null check (position between 1 and 10),
   track_id bigint not null,
   track_name text not null check (char_length(track_name) <= 200),
@@ -49,8 +51,16 @@ create table if not exists public.top_songs (
   artwork_url text check (artwork_url ~ '^https://[a-z0-9.-]+\.mzstatic\.com/'),
   preview_url text not null check (preview_url ~ '^https://[a-z0-9.-]+\.(apple|mzstatic)\.com/'),
   track_url text check (track_url is null or track_url = '' or track_url ~ '^https://(music|itunes|geo\.music)\.apple\.com/'),
-  primary key (user_id, position)
+  primary key (user_id, month, position)
 );
+-- Si ya habías creado la tabla con la versión anterior (sin meses), esto la actualiza sin perder datos.
+do $$ begin
+  if not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'top_songs' and column_name = 'month') then
+    alter table public.top_songs add column month date not null default date_trunc('month', now())::date check (extract(day from month) = 1);
+    alter table public.top_songs drop constraint top_songs_pkey;
+    alter table public.top_songs add primary key (user_id, month, position);
+  end if;
+end $$;
 
 -- Reportes (solo los ve la administradora desde el panel de Supabase)
 create table if not exists public.reports (
@@ -70,19 +80,30 @@ alter table public.top_songs enable row level security;
 alter table public.reports   enable row level security;
 
 -- Lectura pública
+drop policy if exists "perfiles visibles" on public.profiles;
 create policy "perfiles visibles" on public.profiles for select using (true);
-create policy "posts visibles"    on public.posts    for select using (true);
-create policy "likes visibles"    on public.likes    for select using (true);
-create policy "tops visibles"     on public.top_songs for select using (true);
+drop policy if exists "posts visibles" on public.posts;
+create policy "posts visibles" on public.posts    for select using (true);
+drop policy if exists "likes visibles" on public.likes;
+create policy "likes visibles" on public.likes    for select using (true);
+drop policy if exists "tops visibles" on public.top_songs;
+create policy "tops visibles" on public.top_songs for select using (true);
 
 -- Escritura solo de lo propio
-create policy "crear mi perfil"   on public.profiles for insert to authenticated with check (id = auth.uid());
-create policy "editar mi perfil"  on public.profiles for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
-create policy "crear mi post"     on public.posts for insert to authenticated with check (user_id = auth.uid());
-create policy "borrar mi post"    on public.posts for delete to authenticated using (user_id = auth.uid());
-create policy "dar like"          on public.likes for insert to authenticated with check (user_id = auth.uid());
-create policy "quitar like"       on public.likes for delete to authenticated using (user_id = auth.uid());
-create policy "reportar"          on public.reports for insert to authenticated with check (reporter = auth.uid());
+drop policy if exists "crear mi perfil" on public.profiles;
+create policy "crear mi perfil" on public.profiles for insert to authenticated with check (id = auth.uid());
+drop policy if exists "editar mi perfil" on public.profiles;
+create policy "editar mi perfil" on public.profiles for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
+drop policy if exists "crear mi post" on public.posts;
+create policy "crear mi post" on public.posts for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "borrar mi post" on public.posts;
+create policy "borrar mi post" on public.posts for delete to authenticated using (user_id = auth.uid());
+drop policy if exists "dar like" on public.likes;
+create policy "dar like" on public.likes for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "quitar like" on public.likes;
+create policy "quitar like" on public.likes for delete to authenticated using (user_id = auth.uid());
+drop policy if exists "reportar" on public.reports;
+create policy "reportar" on public.reports for insert to authenticated with check (reporter = auth.uid());
 
 -- Límite anti-spam: máximo 30 publicaciones por día por persona
 create or replace function public.posts_rate_limit() returns trigger
@@ -96,19 +117,32 @@ end $$;
 drop trigger if exists posts_rate_limit on public.posts;
 create trigger posts_rate_limit before insert on public.posts for each row execute function public.posts_rate_limit();
 
--- Guardar el top completo de una vez (reemplaza el anterior)
-create or replace function public.save_top_songs(songs jsonb) returns void
+-- Guardar el Top 10 de un mes de una vez (reemplaza el de ese mes).
+-- Solo se puede editar el mes en curso (con 1 día de margen por las zonas horarias):
+-- los meses pasados quedan congelados como historial.
+drop function if exists public.save_top_songs(jsonb);
+create or replace function public.save_top_songs(songs jsonb, top_month date) returns void
 language plpgsql security invoker set search_path = public as $$
 begin
   if auth.uid() is null then raise exception 'not authenticated'; end if;
   if jsonb_array_length(songs) > 10 then raise exception 'max 10 songs'; end if;
-  delete from public.top_songs where user_id = auth.uid();
-  insert into public.top_songs (user_id, position, track_id, track_name, artist_name, artwork_url, preview_url, track_url)
-  select auth.uid(), (s->>'position')::smallint, (s->>'track_id')::bigint, s->>'track_name', s->>'artist_name',
+  if top_month is null or extract(day from top_month) <> 1
+     or top_month not in (date_trunc('month', now() - interval '1 day')::date, date_trunc('month', now() + interval '1 day')::date) then
+    raise exception 'only the current month can be edited';
+  end if;
+  delete from public.top_songs where user_id = auth.uid() and month = top_month;
+  insert into public.top_songs (user_id, month, position, track_id, track_name, artist_name, artwork_url, preview_url, track_url)
+  select auth.uid(), top_month, (s->>'position')::smallint, (s->>'track_id')::bigint, s->>'track_name', s->>'artist_name',
          s->>'artwork_url', s->>'preview_url', s->>'track_url'
   from jsonb_array_elements(songs) s;
 end $$;
 -- La función corre con los permisos de la persona, así que necesita estas políticas:
-create policy "mi top: insertar" on public.top_songs for insert to authenticated with check (user_id = auth.uid());
-create policy "mi top: borrar"   on public.top_songs for delete to authenticated using (user_id = auth.uid());
-revoke execute on function public.save_top_songs(jsonb) from anon;
+-- Solo el mes en curso: así nadie puede reescribir su historial, ni siquiera saltándose la app.
+drop policy if exists "mi top: insertar" on public.top_songs;
+create policy "mi top: insertar" on public.top_songs for insert to authenticated
+  with check (user_id = auth.uid() and month >= date_trunc('month', now() - interval '1 day')::date and month <= date_trunc('month', now() + interval '1 day')::date);
+drop policy if exists "mi top: borrar" on public.top_songs;
+create policy "mi top: borrar" on public.top_songs for delete to authenticated
+  using (user_id = auth.uid() and month >= date_trunc('month', now() - interval '1 day')::date);
+revoke execute on function public.save_top_songs(jsonb, date) from anon, public;
+grant execute on function public.save_top_songs(jsonb, date) to authenticated;

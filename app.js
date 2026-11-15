@@ -27,7 +27,11 @@ const DICT = {
     full_song: "Escuchar completa", not_found: "Perfil no encontrado", no_results: "Sin resultados",
     error: "Algo salió mal. Intenta de nuevo.", offline: "Sin conexión", too_many: "Has publicado mucho hoy. Intenta mañana.",
     up: "Subir", down: "Bajar", remove: "Quitar", now: "ahora", login_needed: "Entra para hacer eso",
-    privacy: "Solo mostramos vistas previas oficiales de 30 s con licencia. La canción completa se escucha en su plataforma."
+    privacy: "Solo mostramos vistas previas oficiales de 30 s con licencia. La canción completa se escucha en su plataforma.",
+    top_month: "Top 10 del mes", my_top: "Mi Top 10 del mes", top_title: "Top 10 de {m}", your_top: "Tu Top 10 de {m}",
+    top_empty_me: "Aún no armas tu Top 10 de {m}. ¿Cuáles son tus 10 canciones de este mes?", build_top: "Armar mi Top 10",
+    use_prev: "Empezar con mi top de {m}", month: "Mes", past_frozen: "Los meses pasados quedan guardados como historial y ya no se pueden cambiar.",
+    edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
     feed: "Home", new: "Post", me: "Profile", login: "Sign in", logout: "Sign out",
@@ -50,10 +54,14 @@ const DICT = {
     full_song: "Listen to full song", not_found: "Profile not found", no_results: "No results",
     error: "Something went wrong. Try again.", offline: "Offline", too_many: "You've posted a lot today. Try tomorrow.",
     up: "Up", down: "Down", remove: "Remove", now: "now", login_needed: "Sign in to do that",
-    privacy: "We only play official licensed 30 s previews. Full songs play on their platform."
+    privacy: "We only play official licensed 30 s previews. Full songs play on their platform.",
+    top_month: "Top 10 of the month", my_top: "My monthly Top 10", top_title: "Top 10 of {m}", your_top: "Your Top 10 of {m}",
+    top_empty_me: "You haven't built your Top 10 for {m} yet. What are your 10 songs this month?", build_top: "Build my Top 10",
+    use_prev: "Start from my {m} top", month: "Month", past_frozen: "Past months are kept as history and can no longer be changed.",
+    edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
-const t = k => DICT[LANG][k] ?? DICT.es[k] ?? k;
+const t = (k, v) => { let s = DICT[LANG][k] ?? DICT.es[k] ?? k; if (v) for (const [a, b] of Object.entries(v)) s = s.replace("{" + a + "}", b); return s; };
 document.documentElement.lang = LANG;
 
 // ---------- Utilidades ----------
@@ -113,6 +121,12 @@ function defaultCountry() {
   return (m || "US").toUpperCase();
 }
 const COUNTRIES = "AR BO BR CA CL CO CR DO EC ES SV GT HN MX NI PA PY PE PR US UY VE GB IE FR DE IT PT NL BE CH AT SE NO DK FI PL CZ GR TR RU UA IL AE SA EG ZA NG KE MA IN PK ID PH VN TH MY SG JP KR TW HK CN AU NZ".split(" ");
+// Meses: clave "AAAA-MM" en la hora local de cada persona
+const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+function monthKey(d = new Date()) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
+function prevMonth(key) { const [y, m] = key.split("-").map(Number); return monthKey(new Date(y, m - 2, 1)); }
+const monthFmt = new Intl.DateTimeFormat(LANG, { month: "long", year: "numeric" });
+function monthLabel(key) { const [y, m] = key.split("-").map(Number); return monthFmt.format(new Date(y, m - 1, 1)); }
 const regionName = (() => { try { const d = new Intl.DisplayNames([LANG], { type: "region" }); return c => d.of(c) || c; } catch { return c => c; } })();
 
 // ---------- Música (vistas previas oficiales de Apple/iTunes: gratis, legales, globales) ----------
@@ -199,7 +213,8 @@ function trackRow(track, opts = {}) {
 function LocalStore() {
   const KEY = "coro_demo_v1";
   let db; try { db = JSON.parse(localStorage.getItem(KEY)); } catch {}
-  db ||= { me: null, posts: [], likes: {}, top: [] };
+  db ||= { me: null, posts: [], likes: {}, tops: {} };
+  if (!db.tops) { db.tops = {}; if (db.top?.length) db.tops[monthKey()] = db.top; delete db.top; } // datos de la versión anterior
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
   const decorate = p => ({ ...p, user: db.me, likes: db.likes[p.id] ? 1 : 0, liked: !!db.likes[p.id] });
   return {
@@ -213,8 +228,9 @@ function LocalStore() {
     async createPost(p) { db.posts.unshift({ id: Date.now(), ...p, created_at: new Date().toISOString() }); save(); },
     async deletePost(id) { db.posts = db.posts.filter(p => p.id !== id); delete db.likes[id]; save(); },
     async toggleLike(post) { if (db.likes[post.id]) delete db.likes[post.id]; else db.likes[post.id] = 1; save(); },
-    async top() { return db.top; },
-    async saveTop(list) { db.top = list.slice(0, MAX_TOP); save(); },
+    async top(_u, month) { return db.tops[month] || []; },
+    async topMonths() { return Object.keys(db.tops).filter(k => db.tops[k].length).sort().reverse(); },
+    async saveTop(list, month) { db.tops[month] = list.slice(0, MAX_TOP); save(); },
     async report() {},
     async signOut() {}
   };
@@ -273,13 +289,16 @@ async function CloudStore(cfg) {
       if (post.liked) { const { error } = await sb.from("likes").delete().eq("post_id", post.id).eq("user_id", id); err(error); }
       else { const { error } = await sb.from("likes").insert({ post_id: post.id }); err(error); }
     },
-    async top(userId) {
-      const { data, error } = await sb.from("top_songs").select("*").eq("user_id", userId).order("position"); err(error);
+    async top(userId, month) {
+      const { data, error } = await sb.from("top_songs").select("*").eq("user_id", userId).eq("month", month + "-01").order("position"); err(error);
       return (data || []).map(r => ({ id: r.track_id, name: r.track_name, artist: r.artist_name, art: r.artwork_url, preview: r.preview_url, url: r.track_url }));
     },
-    async saveTop(list) {
-      const id = await uid();
-      const { error } = await sb.rpc("save_top_songs", { songs: list.slice(0, MAX_TOP).map((s, i) => ({ position: i + 1, track_id: s.id, track_name: s.name, artist_name: s.artist, artwork_url: s.art, preview_url: s.preview, track_url: s.url })) });
+    async topMonths(userId) {
+      const { data, error } = await sb.from("top_songs").select("month").eq("user_id", userId).eq("position", 1).order("month", { ascending: false }).limit(120); err(error);
+      return (data || []).map(r => String(r.month).slice(0, 7));
+    },
+    async saveTop(list, month) {
+      const { error } = await sb.rpc("save_top_songs", { top_month: month + "-01", songs: list.slice(0, MAX_TOP).map((s, i) => ({ position: i + 1, track_id: s.id, track_name: s.name, artist_name: s.artist, artwork_url: s.art, preview_url: s.preview, track_url: s.url })) });
       err(error);
     },
     async report(postId, reason) { const { error } = await sb.from("reports").insert({ post_id: postId, reason: clean(reason, 200) }); err(error); },
@@ -410,10 +429,11 @@ async function viewCompose(me) {
   text.focus();
 }
 
-function topEditor(list, onSave) {
+function topEditor(list, onSave, prev) {
   const box = h("div", { class: "col" });
   const draw = () => {
     box.replaceChildren(
+      !list.length && prev?.list.length ? h("button", { class: "btn ghost", onclick: () => { list.push(...prev.list); draw(); } }, t("use_prev", { m: monthLabel(prev.month) })) : null,
       h("div", { class: "top-list" }, ...list.map((s, i) => trackRow(s, { noPlay: true, extra: h("div", { class: "mini" },
         h("button", { class: "icon-btn", disabled: i === 0, "aria-label": t("up"), onclick: () => { [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); } }, "↑"),
         h("button", { class: "icon-btn", disabled: i === list.length - 1, "aria-label": t("down"), onclick: () => { [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); } }, "↓"),
@@ -445,11 +465,25 @@ async function viewEdit(me, first) {
     h("h2", { style: "margin:0" }, first ? t("welcome") : t("edit")),
     first ? h("div", { class: "muted" }, t("welcome_sub")) : null,
     h("label", null, t("username")), u, h("label", null, t("display")), d, h("label", null, t("bio")), b, h("label", null, t("country")), c, save)];
-  if (!first) parts.push(h("div", { class: "card col" }, h("h3", { style: "margin:0" }, t("top")), h("div", { class: "muted small" }, t("add_top")), topEditor(await S.top(me.id), list => S.saveTop(list))));
   $app.replaceChildren(...parts);
 }
 
-async function viewProfile(me, username) {
+async function viewTopEditor(me) {
+  if (!me) return needProfile();
+  const month = monthKey(), before = prevMonth(month);
+  const [list, prevList] = await Promise.all([S.top(me.id, month), S.top(me.id, before)]);
+  $app.replaceChildren(h("div", { class: "card col" },
+    h("h2", { style: "margin:0" }, t("your_top", { m: monthLabel(month) })),
+    h("div", { class: "muted small" }, t("add_top") + ". " + t("past_frozen")),
+    topEditor(list, async l => { await S.saveTop(l, month); location.hash = "#/u/" + me.username; }, { month: before, list: prevList })));
+}
+
+async function shareLink(url, title) {
+  try { if (navigator.share) return await navigator.share({ title, url }); } catch (e) { if (e?.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(url); toast(t("copied")); } catch { prompt(t("share"), url); }
+}
+
+async function viewProfile(me, username, wantMonth) {
   const p = me && me.username === username ? me : await S.profileByUsername(username);
   if (!p) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
   const isMe = me && me.id === p.id;
@@ -460,15 +494,37 @@ async function viewProfile(me, username) {
     content.replaceChildren(h("div", { class: "empty" }, "…"));
     try {
       if (which === 0) {
-        const top = await S.top(p.id);
-        content.replaceChildren(top.length ? h("div", { class: "card top-list" }, ...top.map(s => trackRow(s, { link: true }))) : h("div", { class: "empty" }, t("no_top")));
+        const now = monthKey();
+        const months = await S.topMonths(p.id);
+        let month = wantMonth && MONTH_RE.test(wantMonth) ? wantMonth : (months.includes(now) || isMe || !months.length ? now : months[0]);
+        const opts = [...new Set([...(isMe ? [now] : []), ...months, month])].sort().reverse();
+        const body = h("div", null);
+        const drawMonth = async () => {
+          stopAudio();
+          body.replaceChildren(h("div", { class: "empty" }, "…"));
+          const top = await S.top(p.id, month);
+          const url = location.href.split("#")[0] + "#/u/" + p.username + "/" + month;
+          const head = h("div", { class: "row", style: "margin-bottom:10px" },
+            h("h3", { style: "margin:0;flex:1" }, t("top_title", { m: monthLabel(month) })),
+            top.length ? h("button", { class: "icon-btn", onclick: () => shareLink(url, t("top_title", { m: monthLabel(month) }) + " · @" + p.username) }, t("share") + " ↗") : null);
+          if (top.length) body.replaceChildren(h("div", { class: "card" }, head, h("div", { class: "top-list" }, ...top.map(s => trackRow(s, { link: true }))),
+            isMe && month === now ? h("a", { class: "btn ghost", href: "#/top", style: "display:inline-block;text-decoration:none;margin-top:12px" }, t("edit_top")) : null));
+          else if (isMe && month === now) body.replaceChildren(h("div", { class: "card col", style: "text-align:center" },
+            h("div", { class: "muted" }, t("top_empty_me", { m: monthLabel(month) })),
+            h("a", { class: "btn", href: "#/top", style: "text-decoration:none;align-self:center" }, t("build_top"))));
+          else body.replaceChildren(h("div", { class: "empty" }, months.length ? t("no_top_month", { m: monthLabel(month) }) : t("no_top")));
+        };
+        const picker = opts.length > 1 ? h("select", { "aria-label": t("month"), style: "margin-bottom:12px" }, ...opts.map(m => h("option", { value: m, selected: m === month }, monthLabel(m)))) : null;
+        picker?.addEventListener("change", () => { month = picker.value; drawMonth(); });
+        content.replaceChildren(...[picker, body].filter(Boolean));
+        await drawMonth();
       } else {
         const posts = await S.userPosts(p.id);
         content.replaceChildren(...(posts.length ? posts.map(x => postCard(x, me, () => show(1))) : [h("div", { class: "empty" }, t("no_posts"))]));
       }
     } catch { content.replaceChildren(h("div", { class: "empty" }, t("error"))); }
   };
-  tabs.append(h("button", { role: "tab", onclick: () => show(0) }, t("top_of")), h("button", { role: "tab", onclick: () => show(1) }, t("posts")));
+  tabs.append(h("button", { role: "tab", onclick: () => show(0) }, t("top_month")), h("button", { role: "tab", onclick: () => show(1) }, t("posts")));
   $app.replaceChildren(
     h("div", { class: "card" },
       h("div", { class: "row" }, avatar(p, true),
@@ -476,7 +532,9 @@ async function viewProfile(me, username) {
           h("h2", { style: "margin:0;overflow-wrap:anywhere" }, p.display_name || p.username),
           h("div", { class: "muted" }, "@" + p.username + (p.country ? " · " + regionName(p.country) : "")))),
       p.bio ? h("p", { class: "text" }, p.bio) : null,
-      isMe ? h("a", { class: "btn ghost", href: "#/editar", style: "display:inline-block;text-decoration:none;margin-top:8px" }, t("edit")) : null),
+      isMe ? h("div", { class: "row", style: "margin-top:8px;flex-wrap:wrap;gap:8px" },
+        h("a", { class: "btn", href: "#/top", style: "text-decoration:none" }, t("my_top")),
+        h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null),
     tabs, content);
   show(0);
 }
@@ -519,7 +577,8 @@ async function route() {
       return me ? (location.hash = "#/u/" + me.username) : viewEdit(null, true);
     }
     if (hash === "#/editar") return me ? viewEdit(me, false) : needProfile();
-    if (hash.startsWith("#/u/")) return viewProfile(me, hash.slice(4).toLowerCase());
+    if (hash === "#/top") return await viewTopEditor(me);
+    if (hash.startsWith("#/u/")) { const [u, m] = hash.slice(4).split("/"); return await viewProfile(me, u.toLowerCase(), m); }
     return viewFeed(me);
   } catch { $app.replaceChildren(h("div", { class: "empty" }, t("error"))); }
 }
