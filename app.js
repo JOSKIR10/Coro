@@ -44,6 +44,22 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
+    w_tag: "Comparte el pedacito de canción que te eriza la piel.", w_create: "Crear cuenta", w_login: "Ya tengo cuenta", w_guest: "Entrar sin cuenta",
+    w_start: "Empezar", w_terms: "Al continuar aceptas la", w_privacy: "política de privacidad",
+    w_f1: "🎧 Fragmentos de 15 s", w_f2: "🏆 Tu Top 10 de cada mes", w_f3: "💌 Dedícale canciones a tus amigos",
+    m_feliz: "Feliz", m_nostalgia: "Nostalgia", m_fiesta: "Fiesta", m_amor: "Amor", m_desamor: "Desamor", m_calma: "Calma", m_energia: "Energía", m_motivacion: "Motivación",
+    mood_q: "¿Qué emoción tiene?", all_moods: "Todo", explore_mood: "Explorar por emoción", empty_mood: "Nadie ha compartido algo así todavía. ¡Sé la primera persona!",
+    dedicate: "Dedicar a un amigo (opcional)", dedicate_ph: "Busca a quién dedicarla…", for_u: "para", dedicate_btn: "💌 Dedicar una canción", act_dedication: "te dedicó {s}",
+    sotd: "Canción del día", sotd_old: "Su canción", sotd_set: "Elegir mi canción del día", sotd_change: "Cambiar", sotd_title: "Tu canción del día", sotd_sub: "Sonará en tu perfil para quien te visite. Elige el pedacito que más te guste.",
+    sotd_none: "Elige la canción que te define hoy y aparecerá arriba en tu perfil.",
+    compat: "Compatibilidad musical", compat_common: "En común:", compat_none: "Aún no hay suficiente música para comparar. ¡Arma tu Top 10 y vuelve!",
+    compat_0: "Gustos opuestos: ¡mucho por descubrir juntos!", compat_1: "Hay algo en común: buen comienzo.", compat_2: "Buena sintonía 🎶", compat_3: "Almas gemelas musicales 💞",
+    kind_post: "Fragmento", kind_duel: "Duelo", duel_q: "Pregunta del duelo", duel_q_ph: "¿Cuál es mejor para el gym?", duel_a: "Canción A", duel_b: "Canción B",
+    duel_need: "Elige las dos canciones", duel_vote: "Votar", duel_votes: "{n} votos", duel_vote1: "1 voto", duel_you: "Tu voto", duel_title: "Duelo de canciones", vs: "VS",
+    capsule: "Cápsula del tiempo", capsule_cta: "✨ Ver mi cápsula {y}", capsule_cta_other: "✨ Ver su cápsula {y}", capsule_intro: "El año musical de {n}", capsule_start: "▶ Empezar",
+    capsule_month: "El #1 de {m}", capsule_artist: "Artista del año", capsule_stats: "En números", capsule_months: "meses con Top 10", capsule_songs: "canciones distintas",
+    capsule_repeat: "La que más se repitió", capsule_end: "¡Gracias por la música!", capsule_empty: "Todavía no hay Tops de {y}. Arma tu Top 10 de este mes y tu cápsula irá creciendo.",
+    replay: "Ver de nuevo", next: "Siguiente",
     photo: "Foto de perfil", photo_pick: "Elegir foto", photo_remove: "Quitar foto", photo_bad: "Esa imagen no se pudo usar. Prueba con otra (JPG o PNG)",
     comments: "Comentarios", comment_ph: "Escribe un comentario…", send: "Enviar", no_comments: "Sé la primera persona en comentar.",
     activity: "Actividad", act_follow: "empezó a seguirte", act_like: "le dio me gusta a tu fragmento de {s}", act_comment: "comentó en {s}:",
@@ -96,6 +112,22 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
+    w_tag: "Share the bit of a song that gives you chills.", w_create: "Create account", w_login: "I have an account", w_guest: "Continue without an account",
+    w_start: "Start", w_terms: "By continuing you accept the", w_privacy: "privacy policy",
+    w_f1: "🎧 15-second snippets", w_f2: "🏆 Your Top 10 every month", w_f3: "💌 Dedicate songs to friends",
+    m_feliz: "Happy", m_nostalgia: "Nostalgia", m_fiesta: "Party", m_amor: "Love", m_desamor: "Heartbreak", m_calma: "Calm", m_energia: "Energy", m_motivacion: "Motivation",
+    mood_q: "What's the mood?", all_moods: "All", explore_mood: "Explore by mood", empty_mood: "Nobody has shared something like this yet. Be the first!",
+    dedicate: "Dedicate to a friend (optional)", dedicate_ph: "Search who to dedicate it to…", for_u: "for", dedicate_btn: "💌 Dedicate a song", act_dedication: "dedicated {s} to you",
+    sotd: "Song of the day", sotd_old: "Their song", sotd_set: "Pick my song of the day", sotd_change: "Change", sotd_title: "Your song of the day", sotd_sub: "It shows on your profile for visitors. Pick your favorite bit.",
+    sotd_none: "Pick the song that defines you today and it will show at the top of your profile.",
+    compat: "Music match", compat_common: "In common:", compat_none: "Not enough music to compare yet. Build your Top 10 and come back!",
+    compat_0: "Opposite tastes: lots to discover together!", compat_1: "Something in common: good start.", compat_2: "Good vibes 🎶", compat_3: "Musical soulmates 💞",
+    kind_post: "Snippet", kind_duel: "Duel", duel_q: "Duel question", duel_q_ph: "Which one is better for the gym?", duel_a: "Song A", duel_b: "Song B",
+    duel_need: "Pick both songs", duel_vote: "Vote", duel_votes: "{n} votes", duel_vote1: "1 vote", duel_you: "Your vote", duel_title: "Song duel", vs: "VS",
+    capsule: "Time capsule", capsule_cta: "✨ See my {y} capsule", capsule_cta_other: "✨ See their {y} capsule", capsule_intro: "{n}'s year in music", capsule_start: "▶ Start",
+    capsule_month: "#1 of {m}", capsule_artist: "Artist of the year", capsule_stats: "By the numbers", capsule_months: "months with a Top 10", capsule_songs: "different songs",
+    capsule_repeat: "Most repeated", capsule_end: "Thanks for the music!", capsule_empty: "No Tops in {y} yet. Build this month's Top 10 and your capsule will grow.",
+    replay: "Replay", next: "Next",
     photo: "Profile photo", photo_pick: "Choose photo", photo_remove: "Remove photo", photo_bad: "That image couldn't be used. Try another one (JPG or PNG)",
     comments: "Comments", comment_ph: "Write a comment…", send: "Send", no_comments: "Be the first to comment.",
     activity: "Activity", act_follow: "started following you", act_like: "liked your snippet of {s}", act_comment: "commented on {s}:",
@@ -129,6 +161,9 @@ const PLAYLIST_APPS = [
 ];
 const playlistApp = url => (PLAYLIST_APPS.find(([re]) => re.test(url || "")) || [])[1] || null;
 const MAX_ALBUM = 25;
+const MOODS = [["feliz", "😊"], ["nostalgia", "🥹"], ["fiesta", "🎉"], ["amor", "💘"], ["desamor", "💔"], ["calma", "🌙"], ["energia", "⚡"], ["motivacion", "🔥"]];
+const moodEmoji = m => (MOODS.find(x => x[0] === m) || [])[1] || "";
+const trackJson = (tr, start) => ({ id: tr.id, name: tr.name, artist: tr.artist, art: tr.art, preview: tr.preview, url: tr.url, ...(start != null ? { start } : {}) });
 const COVERS = ["💿", "🎧", "🔥", "🌙", "☀️", "💔", "🏃", "🚗", "🌧️", "🎉", "🌊", "🌸", "✨", "🎸", "🎹", "☕"];
 
 function h(tag, attrs, ...kids) {
@@ -402,7 +437,7 @@ function LocalStore() {
   const KEY = "coro_demo_v1";
   let db; try { db = JSON.parse(localStorage.getItem(KEY)); } catch {}
   db ||= { me: null, posts: [], likes: {}, tops: {}, albums: [] };
-  db.albums ||= []; db.comments ||= {};
+  db.albums ||= []; db.comments ||= {}; db.duels ||= []; db.votes ||= {};
   if (!db.tops) { db.tops = {}; if (db.top?.length) db.tops[monthKey()] = db.top; delete db.top; } // datos de la versión anterior
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
   const decorate = p => ({ ...p, user: db.me, likes: db.likes[p.id] ? 1 : 0, liked: !!db.likes[p.id], comments: (db.comments[p.id] || []).length });
@@ -412,7 +447,14 @@ function LocalStore() {
     async me() { return db.me; },
     async saveProfile(p) { db.me = { id: "local", ...db.me, ...p }; save(); return db.me; },
     async profileByUsername(u) { return db.me && db.me.username === u ? db.me : null; },
-    async feed() { return db.posts.map(decorate); },
+    async feed(_scope, mood) { return db.posts.filter(p => !mood || p.mood === mood).map(decorate); },
+    async duels(_scope, userId) { return db.duels.map(d => { const v = db.votes[d.id]; return { ...d, user: db.me, votes: [v === 0 ? 1 : 0, v === 1 ? 1 : 0], myVote: v ?? null }; }); },
+    async createDuel(d) { db.duels.unshift({ id: Date.now(), user_id: "local", ...d, created_at: new Date().toISOString() }); save(); },
+    async deleteDuel(id) { db.duels = db.duels.filter(d => d.id !== id); delete db.votes[id]; save(); },
+    async vote(duel, pick) { db.votes[duel.id] = pick; save(); },
+    async saveSong(song) { db.me.song = song; save(); },
+    async musicOf() { return []; },
+    async topsOfYear(_u, year) { const out = {}; for (const [k, v] of Object.entries(db.tops)) if (k.startsWith(year + "-") && v.length) out[k] = v; return out; },
     async uploadAvatar(blob) { db.me.avatar_url = await blobToDataUrl(blob); save(); return db.me.avatar_url; },
     async removeAvatar() { delete db.me.avatar_url; save(); },
     async comments(postId) { return (db.comments[postId] || []).map(c => ({ ...c, user: db.me })); },
@@ -457,7 +499,7 @@ async function CloudStore(cfg) {
   let meCache = undefined;
   const uid = async () => (await sb.auth.getSession()).data.session?.user?.id || null;
   const fromRow = (r, mine) => ({
-    id: r.id, text: r.text, clip_start: r.clip_start, created_at: r.created_at,
+    id: r.id, text: r.text, clip_start: r.clip_start, created_at: r.created_at, mood: r.mood, dedicatee: r.dedicatee || null,
     track: { id: r.track_id, name: r.track_name, artist: r.artist_name, art: r.artwork_url, preview: r.preview_url, url: r.track_url },
     user: r.profiles ? { id: r.user_id, ...r.profiles } : { id: r.user_id },
     likes: r.likes?.[0]?.count || 0, liked: mine.has(r.id), comments: r.comments?.[0]?.count || 0
@@ -472,7 +514,7 @@ async function CloudStore(cfg) {
     const blocked = await store.blockedIds();
     return rows.filter(r => !blocked.has(r.user_id)).map(r => fromRow(r, mine));
   }
-  const POST_SEL = "id,user_id,text,track_id,track_name,artist_name,artwork_url,preview_url,track_url,clip_start,created_at,profiles(username,display_name,avatar_url),likes(count),comments(count)";
+  const POST_SEL = "id,user_id,text,track_id,track_name,artist_name,artwork_url,preview_url,track_url,clip_start,created_at,mood,dedicated_to,profiles!posts_user_id_fkey(username,display_name,avatar_url),dedicatee:profiles!posts_dedicated_to_fkey(username,display_name),likes(count),comments(count)";
   const PROF = "username,display_name,avatar_url";
   let blockedCache = null;
   const store = {
@@ -491,8 +533,9 @@ async function CloudStore(cfg) {
       return (meCache = data);
     },
     async profileByUsername(u) { const { data } = await sb.from("profiles").select("*").eq("username", u).maybeSingle(); return data; },
-    async feed(scope) {
+    async feed(scope, mood) {
       let q = sb.from("posts").select(POST_SEL).order("created_at", { ascending: false }).limit(50);
+      if (mood) q = q.eq("mood", mood);
       if (scope === "following") {
         const id = await uid(); if (!id) return [];
         const { data: f, error: fe } = await sb.from("follows").select("followee").eq("follower", id).limit(1000); err(fe);
@@ -501,6 +544,42 @@ async function CloudStore(cfg) {
         q = q.in("user_id", [...ids, id]);
       }
       const { data, error } = await q; err(error); return withLikes(data);
+    },
+    async duels(scope, userId) {
+      let q = sb.from("duels").select("*,profiles(username,display_name,avatar_url)").order("created_at", { ascending: false }).limit(20);
+      if (userId) q = q.eq("user_id", userId);
+      else if (scope === "following") {
+        const id = await uid(); if (!id) return [];
+        const { data: f } = await sb.from("follows").select("followee").eq("follower", id).limit(1000);
+        q = q.in("user_id", [...(f || []).map(x => x.followee), id]);
+      }
+      const { data, error } = await q; err(error);
+      const rows = data || []; if (!rows.length) return [];
+      const id = await uid();
+      const { data: vs } = await sb.from("duel_votes").select("duel_id,pick,user_id").in("duel_id", rows.map(r => r.id)).limit(5000);
+      const blocked = await store.blockedIds();
+      return rows.filter(r => !blocked.has(r.user_id)).map(r => {
+        const mine = (vs || []).filter(v => v.duel_id === r.id);
+        return { ...r, user: { id: r.user_id, ...r.profiles }, votes: [mine.filter(v => v.pick === 0).length, mine.filter(v => v.pick === 1).length], myVote: mine.find(v => v.user_id === id)?.pick ?? null };
+      });
+    },
+    async createDuel(d) { const { error } = await sb.from("duels").insert({ question: d.question, a: d.a, b: d.b }); if (error && /limit/i.test(error.message)) throw new Error(t("too_many")); err(error); },
+    async deleteDuel(id) { const { error } = await sb.from("duels").delete().eq("id", id); err(error); },
+    async vote(duel, pick) { const { error } = await sb.from("duel_votes").upsert({ duel_id: duel.id, user_id: await uid(), pick }); err(error); },
+    async saveSong(song) { const id = await uid(); const { error } = await sb.from("profiles").update({ song }).eq("id", id); err(error); if (meCache) meCache.song = song; },
+    async musicOf(userId) {
+      const [a, b, c] = await Promise.all([
+        sb.from("top_songs").select("track_id,artist_name").eq("user_id", userId).limit(300),
+        sb.from("posts").select("track_id,artist_name").eq("user_id", userId).limit(200),
+        sb.from("albums").select("songs").eq("user_id", userId).limit(30)]);
+      return [...(a.data || []), ...(b.data || [])].map(x => ({ id: x.track_id, artist: x.artist_name }))
+        .concat((c.data || []).flatMap(x => (Array.isArray(x.songs) ? x.songs : []).map(s => ({ id: s.id, artist: s.artist }))));
+    },
+    async topsOfYear(userId, year) {
+      const { data, error } = await sb.from("top_songs").select("*").eq("user_id", userId).gte("month", year + "-01-01").lte("month", year + "-12-01").order("month").order("position"); err(error);
+      const out = {};
+      for (const r of data || []) (out[String(r.month).slice(0, 7)] ||= []).push({ id: r.track_id, name: r.track_name, artist: r.artist_name, art: r.artwork_url, preview: r.preview_url, url: r.track_url });
+      return out;
     },
     async uploadAvatar(blob) {
       const id = await uid(), path = id + "/avatar.jpg";
@@ -528,20 +607,23 @@ async function CloudStore(cfg) {
         sb.from("follows").select(`created_at,follower,profiles!follows_follower_fkey(${PROF})`).eq("followee", id).order("created_at", { ascending: false }).limit(30),
         sb.from("likes").select(`created_at,user_id,profiles(${PROF}),posts!inner(user_id,track_name)`).eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(30),
         sb.from("comments").select(`created_at,user_id,text,post_id,profiles(${PROF}),posts!inner(user_id,track_name)`).eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(30)]);
-      err(f.error || l.error || c.error);
+      const dd = await sb.from("posts").select(`created_at,user_id,track_name,text,profiles!posts_user_id_fkey(${PROF})`).eq("dedicated_to", id).order("created_at", { ascending: false }).limit(30);
+      err(f.error || l.error || c.error || dd.error);
       const blocked = await store.blockedIds();
       return [
         ...(f.data || []).map(x => ({ kind: "follow", at: x.created_at, uid: x.follower, user: x.profiles })),
         ...(l.data || []).map(x => ({ kind: "like", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.posts?.track_name })),
-        ...(c.data || []).map(x => ({ kind: "comment", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.posts?.track_name, text: x.text }))
+        ...(c.data || []).map(x => ({ kind: "comment", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.posts?.track_name, text: x.text })),
+        ...(dd.data || []).map(x => ({ kind: "dedication", at: x.created_at, uid: x.user_id, user: x.profiles, song: x.track_name, text: x.text }))
       ].filter(x => x.user && !blocked.has(x.uid)).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 50);
     },
     async lastActivityAt() {
       const id = await uid(); if (!id) return null;
-      const [f, c] = await Promise.all([
+      const [f, c, d] = await Promise.all([
         sb.from("follows").select("created_at").eq("followee", id).order("created_at", { ascending: false }).limit(1),
+        sb.from("posts").select("created_at").eq("dedicated_to", id).order("created_at", { ascending: false }).limit(1),
         sb.from("comments").select("created_at,posts!inner(user_id)").eq("posts.user_id", id).neq("user_id", id).order("created_at", { ascending: false }).limit(1)]);
-      return [f.data?.[0]?.created_at, c.data?.[0]?.created_at].filter(Boolean).sort().pop() || null;
+      return [f.data?.[0]?.created_at, c.data?.[0]?.created_at, d.data?.[0]?.created_at].filter(Boolean).sort().pop() || null;
     },
     async blockedIds() {
       if (blockedCache) return blockedCache;
@@ -580,7 +662,7 @@ async function CloudStore(cfg) {
     async unfollow(userId) { const id = await uid(); const { error } = await sb.from("follows").delete().eq("follower", id).eq("followee", userId); err(error); },
     async userPosts(userId) { const { data, error } = await sb.from("posts").select(POST_SEL).eq("user_id", userId).order("created_at", { ascending: false }).limit(50); err(error); return withLikes(data); },
     async createPost(p) {
-      const { error } = await sb.from("posts").insert({ text: p.text, clip_start: p.clip_start, track_id: p.track.id, track_name: p.track.name, artist_name: p.track.artist, artwork_url: p.track.art, preview_url: p.track.preview, track_url: p.track.url });
+      const { error } = await sb.from("posts").insert({ mood: p.mood || null, dedicated_to: p.dedicated_to || null, text: p.text, clip_start: p.clip_start, track_id: p.track.id, track_name: p.track.name, artist_name: p.track.artist, artwork_url: p.track.art, preview_url: p.track.preview, track_url: p.track.url });
       if (error && /limit/i.test(error.message)) throw new Error(t("too_many")); err(error);
     },
     async deletePost(id) { const { error } = await sb.from("posts").delete().eq("id", id); err(error); },
@@ -683,6 +765,9 @@ function postCard(p, me, onChange) {
       h("div", null,
         h("a", { class: "author", href: "#/u/" + encodeURIComponent(p.user.username || "") }, p.user.display_name || p.user.username || "—"),
         h("div", { class: "muted small" }, "@" + (p.user.username || "") + " · " + ago(p.created_at)))),
+    p.mood || p.dedicatee ? h("div", { class: "row", style: "gap:6px;flex-wrap:wrap;margin-top:8px" },
+      p.mood ? h("a", { class: "chip", href: "#/emocion/" + p.mood }, moodEmoji(p.mood) + " " + t("m_" + p.mood)) : null,
+      p.dedicatee ? h("a", { class: "chip ded", href: "#/u/" + p.dedicatee.username }, "💌 " + t("for_u") + " @" + p.dedicatee.username) : null) : null,
     p.text ? h("p", { class: "text" }, p.text) : h("div", { style: "height:10px" }),
     trackRow(p.track, { start: p.clip_start, link: true, clipLabel: true }),
     h("div", { class: "actions" }, ...actions), box);
@@ -727,14 +812,48 @@ async function viewActivity(me) {
       avatar(x.user),
       h("div", { style: "flex:1;min-width:0" },
         h("div", null, h("b", null, x.user.display_name || x.user.username), " ",
-          x.kind === "follow" ? t("act_follow") : x.kind === "like" ? t("act_like", { s: x.song || "" }) : t("act_comment", { s: x.song || "" })),
+          x.kind === "follow" ? t("act_follow") : x.kind === "like" ? t("act_like", { s: x.song || "" }) : x.kind === "dedication" ? t("act_dedication", { s: x.song || "" }) : t("act_comment", { s: x.song || "" })),
         x.text ? h("div", { class: "muted small", style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, "“" + x.text + "”") : null,
         h("div", { class: "muted small" }, ago(x.at))),
-      h("span", { class: "act-ico", "aria-hidden": "true" }, x.kind === "follow" ? "👋" : x.kind === "like" ? "❤️" : "💬"))))
+      h("span", { class: "act-ico", "aria-hidden": "true" }, x.kind === "follow" ? "👋" : x.kind === "like" ? "❤️" : x.kind === "dedication" ? "💌" : "💬"))))
     : h("div", { class: "empty" }, t("act_empty")));
 }
 
-async function viewFeed(me) {
+function moodChips(current, onPick) {
+  const row = h("div", { class: "chips", role: "toolbar", "aria-label": t("explore_mood") });
+  const draw = cur => row.replaceChildren(h("button", { class: "chip" + (!cur ? " act" : ""), onclick: () => { onPick(null); draw(null); } }, t("all_moods")),
+    ...MOODS.map(([k, e]) => h("button", { class: "chip" + (cur === k ? " act" : ""), "aria-pressed": String(cur === k), onclick: () => { onPick(k); draw(k); } }, e + " " + t("m_" + k))));
+  draw(current); return row;
+}
+
+function duelCard(d, me, onChange) {
+  const total = d.votes[0] + d.votes[1];
+  const voted = d.myVote !== null && d.myVote !== undefined;
+  const side = (tr, i) => {
+    const pct = total ? Math.round(d.votes[i] * 100 / total) : 0;
+    return h("div", { class: "duel-side" + (voted && d.myVote === i ? " mine" : "") },
+      h("div", { class: "disc big" }, h("span", { class: "vinyl", "aria-hidden": "true" }), h("img", { src: SAFE_MEDIA.test(tr.art || "") ? tr.art : "", alt: "", loading: "lazy" })),
+      h("div", { class: "name" }, tr.name), h("div", { class: "muted small" }, tr.artist),
+      playButton(tr, tr.start || 0),
+      voted ? h("div", { class: "bar" }, h("i", { style: `width:${pct}%` }), h("span", null, pct + "%" + (d.myVote === i ? " · " + t("duel_you") : "")))
+        : h("button", { class: "btn", "data-sfx": "ok", onclick: async () => {
+          if (!me) { toast(t("login_needed")); return needProfile(); }
+          try { await S.vote(d, i); d.myVote = i; d.votes[i]++; onChange ? onChange() : null; card.replaceWith(duelCard(d, me, onChange)); } catch (e) { toast(friendly(e)); }
+        } }, t("duel_vote")));
+  };
+  const mine = me && d.user_id === me.id;
+  const card = h("article", { class: "card duel" },
+    h("div", { class: "row" }, avatar(d.user),
+      h("div", { style: "flex:1" }, h("a", { class: "author", href: "#/u/" + (d.user.username || "") }, d.user.display_name || d.user.username),
+        h("div", { class: "muted small" }, "⚔️ " + t("duel_title") + " · " + ago(d.created_at))),
+      mine ? h("button", { class: "icon-btn", "data-sfx": "down", "aria-label": t("del"), onclick: async () => { if (!confirm(t("confirm_del"))) return; try { await S.deleteDuel(d.id); card.remove(); } catch (e) { toast(friendly(e)); } } }, h("span", { html: ICON.trash })) : null),
+    d.question ? h("h3", { class: "duel-q" }, d.question) : null,
+    h("div", { class: "duel-grid" }, side(d.a, 0), h("div", { class: "vs" }, t("vs")), side(d.b, 1)),
+    h("div", { class: "muted small", style: "text-align:center;margin-top:8px" }, total === 1 ? t("duel_vote1") : t("duel_votes", { n: total })));
+  return card;
+}
+
+async function viewFeed(me, moodRoute) {
   const list = h("div", null, h("div", { class: "empty" }, "…"));
   const parts = [];
   if (!me) parts.push(h("div", { class: "card hero" },
@@ -742,7 +861,8 @@ async function viewFeed(me) {
     h("h1", null, t("hero")), h("p", { class: "muted" }, t("hero_sub")),
     h("a", { class: "btn", href: "#/yo", style: "text-decoration:none;align-self:flex-start" }, t("hero_cta"))));
   if (S.mode === "local") parts.push(h("div", { class: "banner" }, t("demo")));
-  let scope = "all";
+  let scope = "all", mood = moodRoute && MOODS.some(m => m[0] === moodRoute) ? moodRoute : null;
+  parts.push(moodChips(mood, m => { mood = m; history.replaceState(null, "", m ? "#/emocion/" + m : "#/"); load(); }));
   try { scope = me && S.mode === "cloud" && localStorage.getItem("coro_feed") === "following" ? "following" : "all"; } catch {}
   if (me && S.mode === "cloud") {
     const seg = h("div", { class: "tabs", role: "tablist" });
@@ -754,11 +874,12 @@ async function viewFeed(me) {
   const load = async () => {
     list.replaceChildren(h("div", { class: "empty" }, "…"));
     try {
-      const posts = await S.feed(scope);
-      const empty = scope === "following"
+      const [posts, duels] = await Promise.all([S.feed(scope, mood), mood ? [] : S.duels(scope).catch(() => [])]);
+      const items = [...posts.map(p => ({ k: "p", at: p.created_at, p })), ...duels.map(d => ({ k: "d", at: d.created_at, d }))].sort((a, b) => b.at.localeCompare(a.at));
+      const empty = mood ? h("div", { class: "empty" }, moodEmoji(mood) + " " + t("empty_mood")) : scope === "following"
         ? h("div", { class: "empty col", style: "align-items:center" }, t("empty_following"), h("a", { class: "btn", href: "#/buscar", style: "text-decoration:none" }, t("find_friends")))
         : h("div", { class: "empty" }, t("empty_feed"));
-      list.replaceChildren(...(posts.length ? posts.map(p => postCard(p, me, load)) : [empty]));
+      list.replaceChildren(...(items.length ? items.map(x => x.k === "p" ? postCard(x.p, me, load) : duelCard(x.d, me)) : [empty]));
     } catch { list.replaceChildren(h("div", { class: "empty" }, navigator.onLine ? t("error") : t("offline"))); }
   };
   load();
@@ -784,37 +905,98 @@ function songSearch(onPick, { selectedId } = {}) {
   return h("div", { class: "col" }, input, results);
 }
 
-async function viewCompose(me) {
-  if (!me) return needProfile();
+function userPicker(me, initial, onPick) {
+  const box = h("div", { class: "col" });
+  let chosen = initial || null;
+  const draw = () => {
+    if (chosen) return box.replaceChildren(h("div", { class: "row chip-row" }, avatar(chosen, "sm"), h("b", { style: "flex:1" }, "💌 @" + chosen.username),
+      h("button", { class: "icon-btn", "data-sfx": "down", "aria-label": t("remove"), onclick: () => { chosen = null; onPick(null); draw(); } }, "✕")));
+    const input = h("input", { type: "search", placeholder: t("dedicate_ph"), "aria-label": t("dedicate_ph"), maxlength: 40, autocapitalize: "none" });
+    const res = h("div", { class: "col", style: "gap:2px" });
+    let timer;
+    input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(async () => {
+      const q = input.value.trim(); if (q.length < 2) return res.replaceChildren();
+      const us = (await S.searchUsers(q).catch(() => [])).filter(u => u.id !== me.id).slice(0, 6);
+      res.replaceChildren(...us.map(u => h("button", { class: "user-row", type: "button", style: "border:0;background:none;color:inherit;text-align:left;cursor:pointer", onclick: () => { chosen = u; onPick(u); draw(); } }, avatar(u, "sm"), h("span", null, (u.display_name || u.username) + " · @" + u.username))));
+    }, 300); });
+    box.replaceChildren(input, res);
+  };
+  draw(); return box;
+}
+
+function clipPicker(onChange) {
   let track = null, start = 0;
-  const text = h("textarea", { maxlength: MAX_TEXT, placeholder: t("write"), "aria-label": t("write") });
-  const count = h("div", { class: "count" }, "0/" + MAX_TEXT);
-  text.addEventListener("input", () => { count.textContent = text.value.length + "/" + MAX_TEXT; });
+  const box = h("div", { class: "col" });
   const chosen = h("div", { class: "col" });
-  const pub = h("button", { class: "btn", disabled: true, "data-sfx": "ok" }, t("publish"));
   const renderChosen = () => {
     if (!track) return chosen.replaceChildren();
     const lblText = () => t("from") + " " + start + " → " + (start + CLIP) + " s";
     const lbl = h("span", null, lblText());
     const slider = h("input", { class: "slider", type: "range", min: 0, max: CLIP, step: 1, value: start, "aria-label": t("from") });
-    slider.addEventListener("input", () => { start = +slider.value; lbl.textContent = lblText(); stopAudio(); preview.replaceChildren(trackRow(track, { start })); });
+    slider.addEventListener("input", () => { start = +slider.value; lbl.textContent = lblText(); stopAudio(); preview.replaceChildren(trackRow(track, { start })); onChange(track, start); });
     const preview = h("div", null, trackRow(track, { start }));
     chosen.replaceChildren(preview, h("label", null, t("clip")), slider, h("div", { class: "muted small" }, lbl));
   };
-  const search = songSearch(s => { track = s; start = 0; pub.disabled = false; renderChosen(); search.querySelector(".results").replaceChildren(); });
+  const search = songSearch(x => { track = x; start = 0; renderChosen(); search.querySelector(".results").replaceChildren(); search.querySelector("input").value = ""; onChange(track, start); });
+  box.append(search, chosen);
+  return box;
+}
+
+async function viewCompose(me, forUser) {
+  if (!me) return needProfile();
+  let kind = "post";
+  const seg = h("div", { class: "tabs", role: "tablist" });
+  const body = h("div", null);
+  const drawSeg = () => seg.replaceChildren(...[["post", "🎧 " + t("kind_post")], ["duel", "⚔️ " + t("kind_duel")]].map(([k, l]) =>
+    h("button", { role: "tab", class: kind === k ? "act" : "", "aria-selected": String(kind === k), onclick: () => { kind = k; stopAudio(); drawSeg(); (k === "post" ? composePost : composeDuel)(me, body, forUser); } }, l)));
+  drawSeg();
+  $app.replaceChildren(seg, body);
+  let pre = null;
+  if (forUser) pre = await S.profileByUsername(forUser).catch(() => null);
+  composePost(me, body, pre);
+}
+
+function composeDuel(me, body) {
+  let a = null, b = null;
+  const q = h("input", { type: "text", maxlength: 80, placeholder: t("duel_q_ph"), "aria-label": t("duel_q") });
+  const pub = h("button", { class: "btn", "data-sfx": "ok" }, t("publish"));
+  pub.onclick = async () => {
+    if (!a || !b) return toast(t("duel_need"));
+    pub.disabled = true;
+    try { await S.createDuel({ question: clean(q.value, 80), a: trackJson(a.track, a.start), b: trackJson(b.track, b.start) }); stopAudio(); toast(t("posted")); location.hash = "#/"; }
+    catch (e) { toast(friendly(e)); pub.disabled = false; }
+  };
+  body.replaceChildren(h("div", { class: "card col" },
+    h("label", null, t("duel_q")), q,
+    h("label", null, "🅰️ " + t("duel_a")), clipPicker((tr, st) => { a = { track: tr, start: st }; }),
+    h("div", { class: "vs", style: "margin:4px auto" }, t("vs")),
+    h("label", null, "🅱️ " + t("duel_b")), clipPicker((tr, st) => { b = { track: tr, start: st }; }),
+    pub));
+}
+
+function composePost(me, body, pre) {
+  let track = null, start = 0, mood = null, dedicatee = pre && pre.id !== me.id ? pre : null;
+  const text = h("textarea", { maxlength: MAX_TEXT, placeholder: t("write"), "aria-label": t("write") });
+  const count = h("div", { class: "count" }, "0/" + MAX_TEXT);
+  text.addEventListener("input", () => { count.textContent = text.value.length + "/" + MAX_TEXT; });
+  const pub = h("button", { class: "btn", disabled: true, "data-sfx": "ok" }, t("publish"));
+  const picker = clipPicker((tr, st) => { track = tr; start = st; pub.disabled = false; });
+  const moods = h("div", { class: "chips wrap" });
+  const drawMoods = () => moods.replaceChildren(...MOODS.map(([k, e]) => h("button", { type: "button", class: "chip" + (mood === k ? " act" : ""), "aria-pressed": String(mood === k), onclick: () => { mood = mood === k ? null : k; drawMoods(); } }, e + " " + t("m_" + k))));
+  drawMoods();
   pub.onclick = async () => {
     if (!track) return toast(t("need_song"));
     pub.disabled = true; pub.textContent = t("publishing");
     try {
-      await S.createPost({ text: clean(text.value, MAX_TEXT), track, clip_start: start, user_id: me.id });
+      await S.createPost({ text: clean(text.value, MAX_TEXT), track, clip_start: start, user_id: me.id, mood, dedicated_to: dedicatee?.id, dedicatee: dedicatee ? { username: dedicatee.username, display_name: dedicatee.display_name } : null });
       stopAudio(); toast(t("posted")); location.hash = "#/";
     } catch (e) { toast(friendly(e)); pub.disabled = false; pub.textContent = t("publish"); }
   };
-  $app.replaceChildren(h("div", { class: "card col" },
-    h("h2", { style: "margin:0" }, t("new")),
-    text, count, h("label", null, t("pick_song")), search, chosen,
+  body.replaceChildren(h("div", { class: "card col" },
+    text, count, h("label", null, t("pick_song")), picker,
+    h("label", null, t("mood_q")), moods,
+    S.mode === "cloud" ? h("label", null, t("dedicate")) : null, S.mode === "cloud" ? userPicker(me, dedicatee, u => { dedicatee = u; }) : null,
     h("div", { class: "row" }, h("span", { class: "muted small", style: "flex:1" }, t("privacy")), pub)));
-  text.focus();
 }
 
 function topEditor(list, onSave, prev) {
@@ -877,6 +1059,79 @@ async function viewEdit(me, first) {
       try { await S.deleteAccount(); state.session = null; toast(t("del_account_done")); location.hash = "#/"; route(); } catch (e) { toast(friendly(e)); }
     } }, t("del_account"))));
   $app.replaceChildren(...parts);
+}
+
+async function viewSongEditor(me) {
+  if (!me) return needProfile();
+  let track = null, start = 0;
+  const save = h("button", { class: "btn", disabled: true, "data-sfx": "ok" }, t("save"));
+  save.onclick = async () => {
+    save.disabled = true;
+    try { await S.saveSong({ ...trackJson(track, start), at: new Date().toISOString() }); stopAudio(); toast(t("saved")); location.hash = "#/u/" + me.username; }
+    catch (e) { toast(friendly(e)); save.disabled = false; }
+  };
+  $app.replaceChildren(h("div", { class: "card col" }, h("h2", { style: "margin:0" }, "🎵 " + t("sotd_title")), h("div", { class: "muted small" }, t("sotd_sub")),
+    clipPicker((tr, st) => { track = tr; start = st; save.disabled = false; }), save));
+}
+
+function compatBox(mine, theirs, name) {
+  const A = new Set(mine.map(x => (x.artist || "").toLowerCase()).filter(Boolean)), B = new Set(theirs.map(x => (x.artist || "").toLowerCase()).filter(Boolean));
+  const TA = new Set(mine.map(x => x.id)), TB = new Set(theirs.map(x => x.id));
+  if (A.size < 2 || B.size < 2) return h("div", { class: "compat" }, h("div", { class: "muted small" }, "🔗 " + t("compat") + ": " + t("compat_none")));
+  const ca = [...A].filter(x => B.has(x)), ct = [...TA].filter(x => TB.has(x));
+  const score = Math.min(100, Math.round(100 * (0.7 * ca.length / Math.min(A.size, B.size) + 0.3 * ct.length / Math.min(TA.size, TB.size)) * 1.3));
+  const msg = score < 15 ? t("compat_0") : score < 45 ? t("compat_1") : score < 75 ? t("compat_2") : t("compat_3");
+  const pretty = mine.concat(theirs).reduce((m, x) => { const k = (x.artist || "").toLowerCase(); if (ca.includes(k) && !m.has(k)) m.set(k, x.artist); return m; }, new Map());
+  return h("div", { class: "compat" },
+    h("div", { class: "ring-score", style: `--s:${score}` }, h("b", null, score + "%")),
+    h("div", { style: "flex:1;min-width:0" }, h("div", { class: "small", style: "font-weight:700" }, t("compat") + " · @" + name), h("div", { class: "small" }, msg),
+      pretty.size ? h("div", { class: "muted small", style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, t("compat_common") + " " + [...pretty.values()].slice(0, 4).join(", ")) : null));
+}
+
+async function viewCapsule(me, username, year) {
+  const p = me && me.username === username ? me : await S.profileByUsername(username);
+  if (!p) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
+  year = /^\d{4}$/.test(year || "") ? year : String(new Date().getFullYear());
+  const tops = await S.topsOfYear(p.id, year);
+  const months = Object.keys(tops).sort();
+  const stage = h("div", { class: "capsule" });
+  if (!months.length) { stage.append(h("div", { class: "slide" }, h("div", { class: "big-emoji" }, "⏳"), h("p", null, t("capsule_empty", { y: year })))); return $app.replaceChildren(stage); }
+  const all = months.flatMap(m => tops[m]);
+  const byArtist = new Map(), bySong = new Map();
+  for (const s of all) { byArtist.set(s.artist, (byArtist.get(s.artist) || 0) + 1); const k = s.id; bySong.set(k, { s, n: (bySong.get(k)?.n || 0) + 1 }); }
+  const artist = [...byArtist.entries()].sort((a, b) => b[1] - a[1])[0];
+  const repeat = [...bySong.values()].sort((a, b) => b.n - a.n)[0];
+  const name = p.display_name || p.username;
+  const slides = [
+    { bg: 0, render: () => [h("div", { class: "big-emoji" }, "✨"), h("h1", null, t("capsule_intro", { n: name })), h("div", { class: "year" }, year)] },
+    ...months.map((m, i) => ({ bg: i + 1, track: tops[m][0], render: () => [h("div", { class: "kicker" }, t("capsule_month", { m: monthLabel(m) })),
+      h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" }), h("img", { src: SAFE_MEDIA.test(tops[m][0].art || "") ? tops[m][0].art.replace("300x300", "600x600") : "", alt: "" })),
+      h("h2", null, tops[m][0].name), h("div", { class: "muted" }, tops[m][0].artist)] })),
+    { bg: 3, render: () => [h("div", { class: "kicker" }, t("capsule_artist")), h("div", { class: "big-emoji" }, "🎤"), h("h1", null, artist[0])] },
+    { bg: 4, track: repeat.s, render: () => [h("div", { class: "kicker" }, t("capsule_repeat")), h("h2", null, repeat.s.name), h("div", { class: "muted" }, repeat.s.artist + " · " + repeat.n + "×")] },
+    { bg: 5, render: () => [h("div", { class: "kicker" }, t("capsule_stats")),
+      h("div", { class: "stats" }, h("div", null, h("b", null, String(months.length)), t("capsule_months")), h("div", null, h("b", null, String(bySong.size)), t("capsule_songs")))] },
+    { bg: 6, render: () => [h("div", { class: "big-emoji" }, "💜"), h("h1", null, t("capsule_end")),
+      h("div", { class: "row", style: "justify-content:center;gap:8px;flex-wrap:wrap" },
+        h("button", { class: "btn ghost", onclick: () => go(0) }, t("replay")),
+        h("button", { class: "btn", onclick: () => shareLink(location.href, t("capsule_intro", { n: name }) + " " + year) }, t("share") + " ↗"))] }
+  ];
+  let i = 0, timer;
+  const dots = h("div", { class: "dots" });
+  const go = n => {
+    clearTimeout(timer); stopAudio(); i = n;
+    const sl = slides[i];
+    stage.style.setProperty("--h", (i * 47) % 360);
+    stage.replaceChildren(dots, h("div", { class: "slide enter" }, ...sl.render()));
+    dots.replaceChildren(...slides.map((_, k) => h("i", { class: k < i ? "done" : k === i ? "now" : "" })));
+    if (sl.track && SAFE_MEDIA.test(sl.track.preview || "")) { const fake = h("button", { class: "play", style: "display:none" }, h("span", { class: "ring" }), h("span", { class: "ico" })); stage.append(fake); playClip(sl.track, 5, fake); }
+    if (i < slides.length - 1) timer = setTimeout(() => go(i + 1), 5000);
+  };
+  stage.onclick = e => { if (e.target.closest("button")) return; if (i < slides.length - 1) go(i + 1); };
+  stage.append(h("div", { class: "slide" }, h("div", { class: "big-emoji" }, "✨"), h("h1", null, t("capsule_intro", { n: name })), h("div", { class: "year" }, year),
+    h("button", { class: "btn", "data-sfx": "ok", onclick: () => go(1) }, t("capsule_start"))));
+  window.addEventListener("hashchange", () => clearTimeout(timer), { once: true });
+  $app.replaceChildren(stage);
 }
 
 async function viewTopEditor(me) {
@@ -1065,7 +1320,9 @@ async function viewProfile(me, username, wantMonth, tab) {
         };
         const picker = opts.length > 1 ? h("select", { "aria-label": t("month"), style: "margin-bottom:12px" }, ...opts.map(m => h("option", { value: m, selected: m === month }, monthLabel(m)))) : null;
         picker?.addEventListener("change", () => { month = picker.value; drawMonth(); });
-        content.replaceChildren(...[picker, body].filter(Boolean));
+        const y = String(new Date().getFullYear());
+        const cap = months.length ? h("a", { class: "btn ghost capsule-cta", href: "#/u/" + p.username + "/capsula/" + y }, isMe ? t("capsule_cta", { y }) : t("capsule_cta_other", { y })) : null;
+        content.replaceChildren(...[cap, picker, body].filter(Boolean));
         await drawMonth();
       } else {
         if (which === 1) {
@@ -1075,8 +1332,9 @@ async function viewProfile(me, username, wantMonth, tab) {
             list.length ? h("div", { class: "albums" }, ...list.map(a => albumTile(a, p))) : h("div", { class: "empty" }, isMe ? t("album_empty_me") : t("album_empty")));
           return;
         }
-        const posts = await S.userPosts(p.id);
-        content.replaceChildren(...(posts.length ? posts.map(x => postCard(x, me, () => show(2))) : [h("div", { class: "empty" }, t("no_posts"))]));
+        const [posts, duels] = await Promise.all([S.userPosts(p.id), S.duels(null, p.id).catch(() => [])]);
+        const items = [...posts.map(x => ({ at: x.created_at, el: () => postCard(x, me, () => show(2)) })), ...duels.filter(d => S.mode === "cloud" || isMe).map(d => ({ at: d.created_at, el: () => duelCard(d, me) }))].sort((a, b) => b.at.localeCompare(a.at));
+        content.replaceChildren(...(items.length ? items.map(x => x.el()) : [h("div", { class: "empty" }, t("no_posts"))]));
       }
     } catch { content.replaceChildren(h("div", { class: "empty" }, t("error"))); }
   };
@@ -1086,6 +1344,8 @@ async function viewProfile(me, username, wantMonth, tab) {
   const paintCounts = () => counts.replaceChildren(h("b", null, String(nums.followers)), " " + t("followers") + " · ", h("b", null, String(nums.following)), " " + t("following"));
   if (S.mode === "cloud") S.counts(p.id).then(c => { nums = c; paintCounts(); }).catch(() => {});
   const fb = isMe ? null : followButton(me, p, on => { nums.followers += on ? 1 : -1; paintCounts(); });
+  const compatSlot = h("div", null);
+  if (!isMe && me && S.mode === "cloud") Promise.all([S.musicOf(me.id), S.musicOf(p.id)]).then(([a, b]) => compatSlot.replaceChildren(compatBox(a, b, p.username))).catch(() => {});
   const head = h("div", { class: "card profile-head" },
       h("div", { class: "row" }, avatar(p, true),
         h("div", { style: "flex:1;min-width:0" },
@@ -1093,6 +1353,13 @@ async function viewProfile(me, username, wantMonth, tab) {
           h("div", { class: "muted" }, "@" + p.username + (p.country ? " · " + regionName(p.country) : "")),
           counts)),
       p.bio ? h("p", { class: "text" }, p.bio) : null,
+      p.song && p.song.name ? h("div", { class: "sotd" },
+        h("div", { class: "row", style: "justify-content:space-between" }, h("div", { class: "kicker" }, "🎵 " + (Date.now() - new Date(p.song.at || 0) < 864e5 ? t("sotd") : t("sotd_old"))),
+          isMe ? h("a", { class: "icon-btn small", href: "#/cancion" }, t("sotd_change")) : null),
+        trackRow(p.song, { start: p.song.start || 0, link: true, clipLabel: true }))
+        : isMe ? h("a", { class: "sotd empty-sotd", href: "#/cancion" }, "🎵 " + t("sotd_set"), h("div", { class: "muted small" }, t("sotd_none"))) : null,
+      !isMe && me && S.mode === "cloud" ? compatSlot : null,
+      !isMe && me && S.mode === "cloud" ? h("a", { class: "btn ghost", href: "#/nuevo/para/" + p.username, style: "display:block;text-align:center;text-decoration:none;margin-top:10px" }, t("dedicate_btn")) : null,
       isMe ? h("div", { class: "row", style: "margin-top:8px;flex-wrap:wrap;gap:8px" },
         h("a", { class: "btn", href: "#/top", style: "text-decoration:none" }, t("my_top")),
         h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null);
@@ -1109,7 +1376,7 @@ async function viewProfile(me, username, wantMonth, tab) {
   show(tab === "albums" ? 1 : 0);
 }
 
-function viewLogin() {
+function viewLogin(startSignup) {
   let signup = false;
   const email = h("input", { type: "email", placeholder: t("email"), autocomplete: "email", maxlength: 254 });
   const pass = h("input", { type: "password", placeholder: t("password"), autocomplete: "current-password", minlength: 8, maxlength: 72 });
@@ -1139,7 +1406,29 @@ function viewLogin() {
       try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; route(); } catch (x) { toast(friendly(x)); b.disabled = false; }
     } }, t("guest")),
     h("div", { class: "muted small", style: "text-align:center" }, t("guest_sub")));
-  $app.replaceChildren(h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw, guest));
+  if (startSignup) sw.onclick();
+  $app.replaceChildren(h("a", { class: "icon-btn", href: "#/bienvenida", style: "margin-bottom:8px" }, "← Coro"), h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw, guest));
+}
+
+function viewWelcome() {
+  document.body.classList.add("welcome-mode");
+  const cloud = S.mode === "cloud";
+  const guestAllowed = window.CORO_CONFIG?.allowGuest !== false;
+  const guest = async e => {
+    const b = e.currentTarget; b.disabled = true;
+    try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; } catch (x) { toast(friendly(x)); b.disabled = false; }
+  };
+  $app.replaceChildren(h("div", { class: "welcome" },
+    h("div", { class: "w-orbit", "aria-hidden": "true" }, h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" })), h("span", { class: "n1" }, "♪"), h("span", { class: "n2" }, "♫"), h("span", { class: "n3" }, "♬")),
+    h("div", { class: "w-logo" }, "Coro"),
+    h("p", { class: "w-tag" }, t("w_tag")),
+    h("ul", { class: "w-feats" }, h("li", null, t("w_f1")), h("li", null, t("w_f2")), h("li", null, t("w_f3"))),
+    h("div", { class: "col", style: "width:100%;max-width:360px" },
+      cloud ? h("a", { class: "btn", "data-sfx": "ok", href: "#/entrar/crear", style: "text-align:center;text-decoration:none" }, t("w_create"))
+        : h("a", { class: "btn", "data-sfx": "ok", href: "#/yo", style: "text-align:center;text-decoration:none" }, t("w_start")),
+      cloud ? h("a", { class: "btn ghost", href: "#/entrar", style: "text-align:center;text-decoration:none" }, t("w_login")) : null,
+      cloud && guestAllowed ? h("button", { class: "icon-btn", style: "justify-content:center", onclick: guest }, t("w_guest")) : null),
+    h("div", { class: "muted small", style: "text-align:center" }, t("w_terms") + " ", h("a", { href: "privacidad.html" }, t("w_privacy")), ".")));
 }
 
 function needProfile() { location.hash = S.mode === "cloud" && !state.session ? "#/entrar" : "#/yo"; }
@@ -1151,13 +1440,20 @@ async function route() {
   try { state.session = await S.session(); me = state.session ? await S.me() : null; } catch {}
   if (/[?&](code|error)=/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
   if (S.mode === "cloud" && state.session && !me && hash !== "#/yo") { location.hash = "#/yo"; return; }
+  document.body.classList.remove("welcome-mode");
+  // Como Instagram: si no tienes perfil, lo primero es entrar o crear la cuenta (los enlaces compartidos sí se pueden ver)
+  const open = hash === "#/yo" || hash.startsWith("#/entrar") || hash.startsWith("#/u/");
+  if (!me && !open) { renderNav(me); return viewWelcome(); }
   if (me?.country) state.country = me.country;
   if (me?.theme && !theme.get() && themeVars(me.theme)) theme.set(me.theme);
   renderNav(me);
   window.scrollTo(0, 0);
   try {
     if (hash === "#/nuevo") return viewCompose(me);
-    if (hash === "#/entrar") return S.mode === "cloud" ? viewLogin() : (location.hash = "#/yo");
+    if (hash.startsWith("#/nuevo/para/")) return await viewCompose(me, hash.slice(13).toLowerCase());
+    if (hash === "#/cancion") return await viewSongEditor(me);
+    if (hash.startsWith("#/emocion/")) return await viewFeed(me, hash.slice(10));
+    if (hash === "#/entrar" || hash === "#/entrar/crear") return S.mode === "cloud" ? viewLogin(hash === "#/entrar/crear") : (location.hash = "#/yo");
     if (hash === "#/yo") {
       if (S.mode === "cloud" && !state.session) return viewLogin();
       return me ? (location.hash = "#/u/" + me.username) : viewEdit(null, true);
@@ -1171,6 +1467,7 @@ async function route() {
     if (hash.startsWith("#/u/")) {
       const [u, m, id] = hash.slice(4).split("/");
       if (m === "a" && id) return await viewAlbum(me, u.toLowerCase(), id);
+      if (m === "capsula") return await viewCapsule(me, u.toLowerCase(), id);
       return await viewProfile(me, u.toLowerCase(), m === "albums" ? null : m, m === "albums" ? "albums" : null);
     }
     return viewFeed(me);

@@ -122,6 +122,34 @@ language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.blocks where blocker = por and blocked = quien)
 $$;
 
+-- Ideas únicas de Coro --------------------------------------------------------
+-- Canción del día en el perfil
+alter table public.profiles add column if not exists song jsonb check (song is null or (jsonb_typeof(song) = 'object' and pg_column_size(song) < 2000));
+-- Estado de ánimo y dedicatorias en las publicaciones
+alter table public.posts add column if not exists mood text check (mood is null or mood in ('feliz','nostalgia','fiesta','amor','desamor','calma','energia','motivacion'));
+alter table public.posts add column if not exists dedicated_to uuid references public.profiles(id) on delete set null;
+create index if not exists posts_mood_idx on public.posts (mood, created_at desc) where mood is not null;
+create index if not exists posts_dedicated_idx on public.posts (dedicated_to, created_at desc) where dedicated_to is not null;
+
+-- Duelos de canciones y sus votos (un voto por persona, se puede cambiar)
+create table if not exists public.duels (
+  id bigint generated always as identity primary key,
+  user_id uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  question text check (char_length(question) <= 80),
+  a jsonb not null check (jsonb_typeof(a) = 'object' and pg_column_size(a) < 2000),
+  b jsonb not null check (jsonb_typeof(b) = 'object' and pg_column_size(b) < 2000),
+  created_at timestamptz not null default now()
+);
+create index if not exists duels_created_idx on public.duels (created_at desc);
+create index if not exists duels_user_idx on public.duels (user_id, created_at desc);
+create table if not exists public.duel_votes (
+  duel_id bigint not null references public.duels(id) on delete cascade,
+  user_id uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  pick smallint not null check (pick in (0, 1)),
+  created_at timestamptz not null default now(),
+  primary key (duel_id, user_id)
+);
+
 -- Reportes (solo los ve la administradora desde el panel de Supabase)
 create table if not exists public.reports (
   id bigint generated always as identity primary key,
@@ -146,6 +174,9 @@ alter table public.follows   enable row level security;
 alter table public.comments  enable row level security;
 alter table public.blocks    enable row level security;
 
+alter table public.duels      enable row level security;
+alter table public.duel_votes enable row level security;
+
 -- Lectura pública
 drop policy if exists "perfiles visibles" on public.profiles;
 create policy "perfiles visibles" on public.profiles for select using (true);
@@ -167,13 +198,19 @@ create policy "comentarios visibles" on public.comments for select using (true);
 drop policy if exists "mis bloqueos" on public.blocks;
 create policy "mis bloqueos" on public.blocks for select to authenticated using (blocker = auth.uid());
 
+drop policy if exists "duelos visibles" on public.duels;
+create policy "duelos visibles" on public.duels for select using (true);
+drop policy if exists "votos visibles" on public.duel_votes;
+create policy "votos visibles" on public.duel_votes for select using (true);
+
 -- Escritura solo de lo propio
 drop policy if exists "crear mi perfil" on public.profiles;
 create policy "crear mi perfil" on public.profiles for insert to authenticated with check (id = auth.uid());
 drop policy if exists "editar mi perfil" on public.profiles;
 create policy "editar mi perfil" on public.profiles for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
 drop policy if exists "crear mi post" on public.posts;
-create policy "crear mi post" on public.posts for insert to authenticated with check (user_id = auth.uid());
+create policy "crear mi post" on public.posts for insert to authenticated
+  with check (user_id = auth.uid() and (dedicated_to is null or (dedicated_to <> auth.uid() and not public.is_blocked(dedicated_to, auth.uid()))));
 drop policy if exists "borrar mi post" on public.posts;
 create policy "borrar mi post" on public.posts for delete to authenticated using (user_id = auth.uid());
 drop policy if exists "dar like" on public.likes;
@@ -200,6 +237,14 @@ drop policy if exists "bloquear" on public.blocks;
 create policy "bloquear" on public.blocks for insert to authenticated with check (blocker = auth.uid());
 drop policy if exists "desbloquear" on public.blocks;
 create policy "desbloquear" on public.blocks for delete to authenticated using (blocker = auth.uid());
+drop policy if exists "crear duelo" on public.duels;
+create policy "crear duelo" on public.duels for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "borrar duelo" on public.duels;
+create policy "borrar duelo" on public.duels for delete to authenticated using (user_id = auth.uid());
+drop policy if exists "votar" on public.duel_votes;
+create policy "votar" on public.duel_votes for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "cambiar voto" on public.duel_votes;
+create policy "cambiar voto" on public.duel_votes for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 drop policy if exists "reportar" on public.reports;
 create policy "reportar" on public.reports for insert to authenticated with check (reporter = auth.uid());
 
@@ -260,6 +305,18 @@ begin
 end $$;
 revoke execute on function public.delete_my_account() from anon, public;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- Anti-spam: máximo 10 duelos por día por persona
+create or replace function public.duels_rate_limit() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.duels where user_id = new.user_id and created_at > now() - interval '1 day') >= 10 then
+    raise exception 'daily duel limit reached';
+  end if;
+  return new;
+end $$;
+drop trigger if exists duels_rate_limit on public.duels;
+create trigger duels_rate_limit before insert on public.duels for each row execute function public.duels_rate_limit();
 
 -- Guardar el Top 10 de un mes de una vez (reemplaza el de ese mes).
 -- Solo se puede editar el mes en curso (con 1 día de margen por las zonas horarias):
