@@ -20,7 +20,7 @@ a{color:inherit}
 button,input,textarea,select{font:inherit;color:inherit}
 header.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--glass);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 body::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;background:radial-gradient(40vmax 40vmax at 15% 10%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%),radial-gradient(45vmax 45vmax at 90% 80%,color-mix(in srgb,var(--accent2) 22%,transparent),transparent 70%);animation:drift 24s ease-in-out infinite alternate}
-@keyframes drift{to{transform:translate(4vmax,-3vmax) rotate(8deg)}}
+@keyframes drift{to{transform:translate(3vmax,-2vmax)}}
 .logo{font-weight:800;font-size:22px;letter-spacing:-.5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none}
 main{max-width:620px;margin:0 auto;padding:16px}
 .card{background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:14px}
@@ -87,7 +87,7 @@ nav.bottom a.plus svg{width:30px;height:30px;color:var(--accent)}
 .mini{display:flex;gap:6px}
 .mini button{padding:4px 8px}
 .spacer{flex:1}
-.apple{font-size:12px;color:var(--muted);text-decoration:none}
+.apple{display:block;font-size:12px;color:var(--muted);text-decoration:none}
 .apple:hover{text-decoration:underline}
 .profile-head{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 25%,var(--card)),color-mix(in srgb,var(--accent2) 25%,var(--card)));color:var(--text)}
 .palettes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
@@ -108,6 +108,12 @@ nav.bottom a.plus svg{width:30px;height:30px;color:var(--accent)}
 .covers button.act{border-color:var(--accent)}
 input[type=url]{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}
 #hdr{gap:4px}
+.clip-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:1px 8px;border-radius:999px;margin:3px 0 1px}
+.hero{display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,var(--card)),color-mix(in srgb,var(--accent2) 30%,var(--card)));overflow:hidden;position:relative}
+.hero h1{margin:0;font-size:26px;line-height:1.15;letter-spacing:-.5px;max-width:90%}
+.hero p{margin:0 0 6px}
+.hero-notes{position:absolute;right:12px;top:6px;font-size:28px;opacity:.25;letter-spacing:6px;animation:float 5s ease-in-out infinite alternate}
+@keyframes float{to{transform:translateY(8px) rotate(-6deg)}}
 @media (max-width:420px){main{padding:12px}.track img{width:48px;height:48px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>

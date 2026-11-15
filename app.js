@@ -44,6 +44,7 @@ const DICT = {
     album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
     album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
     songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
+    hero: "Comparte el pedacito de canción que te eriza la piel.", hero_sub: "15 segundos, tu Top 10 de cada mes y álbumes para tus amigos. Solo música.", hero_cta: "Crear mi perfil",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
@@ -84,6 +85,7 @@ const DICT = {
     album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
     album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
     songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
+    hero: "Share the bit of a song that gives you chills.", hero_sub: "15 seconds, your monthly Top 10 and albums for your friends. Just music.", hero_cta: "Create my profile",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
@@ -132,6 +134,19 @@ const ICON = {
   note: '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1011 17.5V8h7V3z"/></svg>',
   mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3l2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>'
 };
+// Traduce los errores técnicos más comunes a algo que se entienda
+function friendly(e) {
+  const m = String(e?.message || e || "");
+  const map = LANG === "es" ? [
+    [/invalid login credentials/i, "Correo o contraseña incorrectos"], [/email not confirmed/i, "Confirma tu correo primero (revisa tu bandeja y spam)"],
+    [/already registered|already been registered/i, "Ese correo ya tiene cuenta. Toca \"Entrar\""], [/password should be at least/i, "La contraseña debe tener al menos 8 caracteres"],
+    [/rate limit|too many/i, "Demasiados intentos. Espera un momento"], [/anonymous sign-ins are disabled/i, "Entrar sin cuenta aún no está activado"],
+    [/provider is not enabled|unsupported provider/i, "Esa forma de entrar aún no está activada"], [/album limit/i, "Llegaste al máximo de 30 álbumes"],
+    [/failed to fetch|networkerror|load failed/i, "Sin conexión. Revisa tu internet"], [/invalid email|unable to validate email/i, "Ese correo no parece válido"]
+  ] : [[/album limit/i, "You reached the 30 album limit"], [/failed to fetch|networkerror|load failed/i, "No connection. Check your internet"]];
+  for (const [re, txt] of map) if (re.test(m)) return txt;
+  return m && m.length < 120 && !/^[A-Z_]+$/.test(m) ? m : t("error");
+}
 let toastTimer;
 function toast(msg) {
   document.querySelector(".toast")?.remove();
@@ -236,6 +251,7 @@ function playButton(track, start) {
   b.addEventListener("click", e => { e.stopPropagation(); playClip(track, start, b); });
   return b;
 }
+const fmtSec = n => Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0");
 function trackRow(track, opts = {}) {
   const img = h("img", { src: SAFE_MEDIA.test(track.art) ? track.art : "", alt: "", loading: "lazy", width: 56, height: 56, decoding: "async" });
   return h("div", { class: "track" + (opts.sel ? " sel" : ""), onclick: opts.onclick },
@@ -243,6 +259,7 @@ function trackRow(track, opts = {}) {
     h("div", { class: "info" },
       h("div", { class: "name" }, track.name),
       h("div", { class: "artist" }, track.artist),
+      opts.clipLabel ? h("div", { class: "clip-tag" }, "♪ " + fmtSec(opts.start || 0) + "–" + fmtSec((opts.start || 0) + CLIP)) : null,
       opts.link && SAFE_LINK.test(track.url) ? h("a", { class: "apple", href: track.url, target: "_blank", rel: "noopener noreferrer" }, t("full_song") + " ↗") : null),
     opts.noPlay ? null : playButton(track, opts.start || 0),
     opts.extra || null);
@@ -469,7 +486,8 @@ const state = { country: localStorage.getItem("coro_country") || defaultCountry(
 
 function renderNav(me) {
   const r = location.hash || "#/";
-  const link = (href, icon, label, cls = "") => h("a", { href, class: cls + (r === href ? " act" : ""), "aria-label": label }, h("span", { html: icon }), label);
+  const active = href => href === "#/" ? (r === "#/" || r === "#") : (r === href || r.startsWith(href + "/"));
+  const link = (href, icon, label, cls = "") => h("a", { href, class: cls + (active(href) ? " act" : ""), "aria-label": label, "aria-current": active(href) ? "page" : null }, h("span", { html: icon }), label);
   const nav = document.getElementById("nav");
   nav.replaceChildren(
     link("#/", ICON.home, t("feed")),
@@ -513,13 +531,17 @@ function postCard(p, me, onChange) {
         h("a", { class: "author", href: "#/u/" + encodeURIComponent(p.user.username || "") }, p.user.display_name || p.user.username || "—"),
         h("div", { class: "muted small" }, "@" + (p.user.username || "") + " · " + ago(p.created_at)))),
     p.text ? h("p", { class: "text" }, p.text) : h("div", { style: "height:10px" }),
-    trackRow(p.track, { start: p.clip_start, link: true }),
+    trackRow(p.track, { start: p.clip_start, link: true, clipLabel: true }),
     h("div", { class: "actions" }, ...actions));
 }
 
 async function viewFeed(me) {
   const list = h("div", null, h("div", { class: "empty" }, "…"));
   const parts = [];
+  if (!me) parts.push(h("div", { class: "card hero" },
+    h("div", { class: "hero-notes", "aria-hidden": "true" }, "♪ ♫ ♩ ♬"),
+    h("h1", null, t("hero")), h("p", { class: "muted" }, t("hero_sub")),
+    h("a", { class: "btn", href: "#/yo", style: "text-decoration:none;align-self:flex-start" }, t("hero_cta"))));
   if (S.mode === "local") parts.push(h("div", { class: "banner" }, t("demo")));
   $app.replaceChildren(...parts, list);
   const load = async () => {
@@ -575,7 +597,7 @@ async function viewCompose(me) {
     try {
       await S.createPost({ text: clean(text.value, MAX_TEXT), track, clip_start: start, user_id: me.id });
       stopAudio(); toast(t("posted")); location.hash = "#/";
-    } catch (e) { toast(e.message || t("error")); pub.disabled = false; pub.textContent = t("publish"); }
+    } catch (e) { toast(friendly(e)); pub.disabled = false; pub.textContent = t("publish"); }
   };
   $app.replaceChildren(h("div", { class: "card col" },
     h("h2", { style: "margin:0" }, t("new")),
@@ -612,9 +634,10 @@ async function viewEdit(me, first) {
     save.disabled = true;
     try {
       const p = await S.saveProfile({ username, display_name: clean(d.value, 40) || username, bio: clean(b.value, 160), country: c.value });
+      if (first && theme.get()) S.saveTheme(theme.get()).catch(() => {});
       state.country = p.country || c.value; try { localStorage.setItem("coro_country", state.country); } catch {}
       toast(t("saved")); location.hash = "#/u/" + p.username;
-    } catch (e) { toast(e.message || t("error")); save.disabled = false; }
+    } catch (e) { toast(friendly(e)); save.disabled = false; }
   };
   const parts = [h("div", { class: "card col" },
     h("h2", { style: "margin:0" }, first ? t("welcome") : t("edit")),
@@ -692,7 +715,7 @@ async function viewAlbumEditor(me, id) {
     try {
       const newId = await S.saveAlbum({ id: a.id, title: tt, emoji, note: clean(note.value, 200), link: ln, songs: list.slice(0, MAX_ALBUM) });
       toast(t("saved")); location.hash = "#/u/" + me.username + "/a/" + newId;
-    } catch (e) { toast(e.message || t("error")); save.disabled = false; }
+    } catch (e) { toast(friendly(e)); save.disabled = false; }
   };
   const parts = [h("div", { class: "card col" },
     h("h2", { style: "margin:0" }, a.id ? t("edit_album") : t("album_new")),
@@ -707,7 +730,6 @@ async function viewAlbumEditor(me, id) {
 }
 
 async function viewSettings(me) {
-  const cur = theme.get() || PALETTES[0];
   const pick = th => { theme.set(th); if (me) S.saveTheme(th).catch(() => {}); draw(); };
   const box = h("div", null);
   const draw = () => {
@@ -727,7 +749,7 @@ async function viewSettings(me) {
         h("button", { class: "btn" + (sfx.on ? "" : " ghost"), onclick: () => { sfx.set(!sfx.on); renderNav(me); draw(); } }, sfx.on ? "🎵 " + t("on") : "🔇 " + t("off"))),
       h("div", { class: "card col" }, h("h2", { style: "margin:0" }, t("install")), installBox()));
   };
-  void cur; draw();
+  draw();
   $app.replaceChildren(box);
 }
 
@@ -809,19 +831,19 @@ function viewLogin() {
       if (signup) { const r = await S.signUp(email.value.trim(), pass.value); if (!r.session) { toast(t("check_email")); go.disabled = false; return; } }
       else await S.signIn(email.value.trim(), pass.value);
       state.session = await S.session(); location.hash = "#/yo"; route();
-    } catch (e) { toast(e.message || t("error")); go.disabled = false; }
+    } catch (e) { toast(friendly(e)); go.disabled = false; }
   };
   const PROVIDERS = { apple: { label: t("with_apple"), cls: "btn sso sso-apple", icon: '<svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9s-2-.9-3.4-.9c-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8 2.2-1.3 3.1-2.5c1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.2-.6 2.9-1.4z"/></svg>' },
     facebook: { label: t("with_facebook"), cls: "btn sso sso-fb", icon: '<svg viewBox="0 0 24 24"><path d="M14 8V6c0-.9.6-1 1-1h3V1h-4c-4 0-5 3-5 5v2H6v4h3v11h5V12h3.5l.5-4z"/></svg>' } };
   const enabled = (window.CORO_CONFIG?.loginProviders || []).filter(p => PROVIDERS[p]);
   const sso = enabled.map(p => h("button", { class: PROVIDERS[p].cls, type: "button", onclick: async e => {
     const b = e.currentTarget; b.disabled = true;
-    try { await S.signInWith(p); } catch (x) { toast(x.message || t("error")); b.disabled = false; }
+    try { await S.signInWith(p); } catch (x) { toast(friendly(x)); b.disabled = false; }
   } }, h("span", { html: PROVIDERS[p].icon }), PROVIDERS[p].label));
   const guest = window.CORO_CONFIG?.allowGuest === false ? null : h("div", { class: "col", style: "border-top:1px solid var(--line);padding-top:12px;margin-top:4px" },
     h("button", { class: "btn ghost", type: "button", onclick: async e => {
       const b = e.currentTarget; b.disabled = true;
-      try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; route(); } catch (x) { toast(x.message || t("error")); b.disabled = false; }
+      try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; route(); } catch (x) { toast(friendly(x)); b.disabled = false; }
     } }, t("guest")),
     h("div", { class: "muted small", style: "text-align:center" }, t("guest_sub")));
   $app.replaceChildren(h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw, guest));

@@ -1,4 +1,5 @@
-// Coro: guarda la "carcasa" de la app para que abra rápido y funcione con mala señal.
+// Coro: guarda la "carcasa" de la app para que abra aunque no haya señal.
+// Estrategia "primero internet": siempre intenta la versión más nueva y, si no hay conexión, usa la guardada.
 const CACHE = "coro-v4";
 const SHELL = ["./", "index.html", "privacidad.html", "app.js", "config.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
@@ -6,9 +7,14 @@ self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Pr
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== location.origin) return; // nunca guardamos datos de otros servidores
-  e.respondWith(caches.open(CACHE).then(async c => {
-    const cached = await c.match(e.request);
-    const net = fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }).catch(() => cached);
-    return cached || net;
-  }));
+  e.respondWith((async () => {
+    const c = await caches.open(CACHE);
+    try {
+      const r = await fetch(e.request, { cache: "no-cache" });
+      if (r.ok) c.put(e.request, r.clone());
+      return r;
+    } catch {
+      return (await c.match(e.request, { ignoreSearch: true })) || (await c.match("index.html")) || Response.error();
+    }
+  })());
 });
