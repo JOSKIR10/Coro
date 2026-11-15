@@ -21,7 +21,12 @@ que ya tienen licencia, y cada canción enlaza a "Escuchar completa".
 - Todo el texto se muestra como texto plano (no se puede inyectar código).
 - Solo se aceptan audios e imágenes de servidores oficiales de Apple.
 
+## Inicio de sesión
+Correo y contraseña, **Facebook** y **Apple** (los dos últimos se activan en `config.js` → `loginProviders` cuando estén configurados en Supabase).
+
 ## Pasos para abrirla al mundo (gratis)
+Guía detallada, paso a paso: [GUIA-CONFIGURACION.md](GUIA-CONFIGURACION.md).
+
 1. Crear cuenta en supabase.com y un proyecto nuevo.
 2. SQL Editor → pegar `supabase-esquema.sql` → Run. (Si ya lo habías ejecutado antes, vuelve a ejecutarlo: actualiza sin borrar datos.)
 3. Project Settings → API → copiar "Project URL" y "anon public key" en `config.js`.

@@ -31,6 +31,7 @@ const DICT = {
     top_month: "Top 10 del mes", my_top: "Mi Top 10 del mes", top_title: "Top 10 de {m}", your_top: "Tu Top 10 de {m}",
     top_empty_me: "Aún no armas tu Top 10 de {m}. ¿Cuáles son tus 10 canciones de este mes?", build_top: "Armar mi Top 10",
     use_prev: "Empezar con mi top de {m}", month: "Mes", past_frozen: "Los meses pasados quedan guardados como historial y ya no se pueden cambiar.",
+    with_apple: "Continuar con Apple", with_facebook: "Continuar con Facebook", or_email: "o con tu correo",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
@@ -58,6 +59,7 @@ const DICT = {
     top_month: "Top 10 of the month", my_top: "My monthly Top 10", top_title: "Top 10 of {m}", your_top: "Your Top 10 of {m}",
     top_empty_me: "You haven't built your Top 10 for {m} yet. What are your 10 songs this month?", build_top: "Build my Top 10",
     use_prev: "Start from my {m} top", month: "Month", past_frozen: "Past months are kept as history and can no longer be changed.",
+    with_apple: "Continue with Apple", with_facebook: "Continue with Facebook", or_email: "or with your email",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
@@ -242,7 +244,7 @@ function loadScript(src) {
 }
 async function CloudStore(cfg) {
   await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js");
-  const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true } });
+  const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" } });
   let meCache = undefined;
   const uid = async () => (await sb.auth.getSession()).data.session?.user?.id || null;
   const fromRow = (r, mine) => ({
@@ -304,6 +306,10 @@ async function CloudStore(cfg) {
     async report(postId, reason) { const { error } = await sb.from("reports").insert({ post_id: postId, reason: clean(reason, 200) }); err(error); },
     async signIn(email, password) { const { error } = await sb.auth.signInWithPassword({ email, password }); err(error); meCache = undefined; },
     async signUp(email, password) { const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } }); err(error); meCache = undefined; return data; },
+    async signInWith(provider) {
+      const { error } = await sb.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + location.pathname } }); err(error);
+    },
+    async authName() { const m = (await sb.auth.getSession()).data.session?.user?.user_metadata || {}; return clean(m.full_name || m.name || "", 40); },
     async signOut() { await sb.auth.signOut(); meCache = null; }
   };
   sb.auth.onAuthStateChange(() => { meCache = undefined; });
@@ -447,7 +453,7 @@ function topEditor(list, onSave, prev) {
 
 async function viewEdit(me, first) {
   const u = h("input", { type: "text", value: me?.username || "", maxlength: 20, autocapitalize: "none", autocomplete: "username", spellcheck: "false", "aria-label": t("username") });
-  const d = h("input", { type: "text", value: me?.display_name || "", maxlength: 40, "aria-label": t("display") });
+  const d = h("input", { type: "text", value: me?.display_name || (first && S.authName ? await S.authName() : ""), maxlength: 40, "aria-label": t("display") });
   const b = h("textarea", { maxlength: 160, "aria-label": t("bio"), style: "min-height:60px" }, me?.bio || "");
   const c = h("select", { "aria-label": t("country") }, ...[...new Set([state.country, ...COUNTRIES])].sort((a, z) => regionName(a).localeCompare(regionName(z), LANG)).map(code => h("option", { value: code, selected: code === (me?.country || state.country) }, regionName(code))));
   const save = h("button", { class: "btn" }, first ? t("start") : t("save"));
@@ -556,7 +562,14 @@ function viewLogin() {
       state.session = await S.session(); location.hash = "#/yo"; route();
     } catch (e) { toast(e.message || t("error")); go.disabled = false; }
   };
-  $app.replaceChildren(h("div", { class: "card col" }, title, email, pass, go, sw));
+  const PROVIDERS = { apple: { label: t("with_apple"), cls: "btn sso sso-apple", icon: '<svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9s-2-.9-3.4-.9c-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8 2.2-1.3 3.1-2.5c1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.1zM13.9 4.9c.7-.9 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.2-.6 2.9-1.4z"/></svg>' },
+    facebook: { label: t("with_facebook"), cls: "btn sso sso-fb", icon: '<svg viewBox="0 0 24 24"><path d="M14 8V6c0-.9.6-1 1-1h3V1h-4c-4 0-5 3-5 5v2H6v4h3v11h5V12h3.5l.5-4z"/></svg>' } };
+  const enabled = (window.CORO_CONFIG?.loginProviders || []).filter(p => PROVIDERS[p]);
+  const sso = enabled.map(p => h("button", { class: PROVIDERS[p].cls, type: "button", onclick: async e => {
+    const b = e.currentTarget; b.disabled = true;
+    try { await S.signInWith(p); } catch (x) { toast(x.message || t("error")); b.disabled = false; }
+  } }, h("span", { html: PROVIDERS[p].icon }), PROVIDERS[p].label));
+  $app.replaceChildren(h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw));
 }
 
 function needProfile() { location.hash = S.mode === "cloud" && !state.session ? "#/entrar" : "#/yo"; }
@@ -566,6 +579,8 @@ async function route() {
   const hash = decodeURIComponent(location.hash || "#/");
   let me = null;
   try { state.session = await S.session(); me = state.session ? await S.me() : null; } catch {}
+  if (/[?&](code|error)=/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
+  if (S.mode === "cloud" && state.session && !me && hash !== "#/yo") { location.hash = "#/yo"; return; }
   if (me?.country) state.country = me.country;
   renderNav(me);
   window.scrollTo(0, 0);
