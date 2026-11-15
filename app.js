@@ -1447,7 +1447,7 @@ function viewWelcome() {
   };
   $app.replaceChildren(h("div", { class: "welcome" },
     h("div", { class: "w-orbit", "aria-hidden": "true" }, h("i", { class: "wave" }), h("i", { class: "wave w2" }), h("i", { class: "wave w3" }), h("i", { class: "wave w4" }), h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" }))),
-    h("div", { class: "w-logo", "aria-label": "Coro" }, ..."Coro".split("").map((c, i) => h("span", { style: `animation-delay:${.15 + i * .09}s`, "aria-hidden": "true" }, c))),
+    h("div", { class: "w-logo", role: "img", "aria-label": "Coro", html: document.querySelector(".logo")?.innerHTML || "Coro" }),
     h("p", { class: "w-tag" }, t("w_tag")),
     h("ul", { class: "w-feats" }, h("li", null, t("w_f1")), h("li", null, t("w_f2")), h("li", null, t("w_f3"))),
     h("div", { class: "col", style: "width:100%;max-width:360px" },
