@@ -32,6 +32,18 @@ const DICT = {
     top_empty_me: "Aún no armas tu Top 10 de {m}. ¿Cuáles son tus 10 canciones de este mes?", build_top: "Armar mi Top 10",
     use_prev: "Empezar con mi top de {m}", month: "Mes", past_frozen: "Los meses pasados quedan guardados como historial y ya no se pueden cambiar.",
     with_apple: "Continuar con Apple", with_facebook: "Continuar con Facebook", or_email: "o con tu correo",
+    guest: "Entrar sin cuenta", guest_sub: "Sin correo ni redes. Ojo: si borras la app o cambias de teléfono, pierdes este perfil.",
+    settings: "Ajustes", colors: "Tus colores", colors_sub: "Elige una paleta o combina tus propios colores.",
+    c_bg: "Fondo", c_1: "Color 1", c_2: "Color 2", sounds: "Notas musicales al tocar", sounds_sub: "Cada toque suena con una nota suave, en armonía.",
+    on: "Activado", off: "Silenciado", install: "Instalar Coro en tu teléfono", install_btn: "Instalar app",
+    install_ios: "En iPhone: toca el botón Compartir (cuadrado con flecha) y luego \"Agregar a inicio\".",
+    install_android: "En Android: toca los ⋮ de Chrome y luego \"Instalar app\" o \"Agregar a pantalla principal\".",
+    installed: "Ya está instalada 🎉", albums: "Álbumes", album_new: "Nuevo álbum", album_title: "Nombre del álbum",
+    album_note: "¿Para quién es o de qué trata?", album_link: "Enlace a tu playlist (Spotify, Apple Music, YouTube Music, Deezer…) — opcional",
+    album_link_bad: "Ese enlace no es de una app de música conocida", album_songs: "Canciones del álbum (máx. 25)",
+    album_empty_me: "Crea álbumes de recomendación para tus amigos: \"Para correr\", \"Si estás triste\", \"Mi 2000s\"…",
+    album_empty: "Todavía no tiene álbumes.", open_in: "Abrir playlist en {app}", album_del: "Borrar álbum", album_confirm_del: "¿Borrar este álbum?",
+    songs_n: "{n} canciones", edit_album: "Editar álbum", tab_top: "Top 10", need_title: "Ponle nombre al álbum", cover: "Portada", back: "Volver",
     edit_top: "Editar mi Top 10", share: "Compartir", copied: "Enlace copiado", no_top_month: "No armó un Top 10 en {m}."
   },
   en: {
@@ -60,6 +72,18 @@ const DICT = {
     top_empty_me: "You haven't built your Top 10 for {m} yet. What are your 10 songs this month?", build_top: "Build my Top 10",
     use_prev: "Start from my {m} top", month: "Month", past_frozen: "Past months are kept as history and can no longer be changed.",
     with_apple: "Continue with Apple", with_facebook: "Continue with Facebook", or_email: "or with your email",
+    guest: "Continue without an account", guest_sub: "No email or social login. Note: if you delete the app or change phones, you lose this profile.",
+    settings: "Settings", colors: "Your colors", colors_sub: "Pick a palette or mix your own colors.",
+    c_bg: "Background", c_1: "Color 1", c_2: "Color 2", sounds: "Musical notes on tap", sounds_sub: "Every tap plays a soft, in-tune note.",
+    on: "On", off: "Muted", install: "Install Coro on your phone", install_btn: "Install app",
+    install_ios: "On iPhone: tap Share (square with arrow), then \"Add to Home Screen\".",
+    install_android: "On Android: tap Chrome's ⋮, then \"Install app\" or \"Add to Home screen\".",
+    installed: "Already installed 🎉", albums: "Albums", album_new: "New album", album_title: "Album name",
+    album_note: "Who is it for, or what is it about?", album_link: "Link to your playlist (Spotify, Apple Music, YouTube Music, Deezer…) — optional",
+    album_link_bad: "That link isn't from a known music app", album_songs: "Album songs (max 25)",
+    album_empty_me: "Make recommendation albums for your friends: \"For running\", \"If you're sad\", \"My 2000s\"…",
+    album_empty: "No albums yet.", open_in: "Open playlist in {app}", album_del: "Delete album", album_confirm_del: "Delete this album?",
+    songs_n: "{n} songs", edit_album: "Edit album", tab_top: "Top 10", need_title: "Give the album a name", cover: "Cover", back: "Back",
     edit_top: "Edit my Top 10", share: "Share", copied: "Link copied", no_top_month: "No Top 10 for {m}."
   }
 };
@@ -73,6 +97,15 @@ const MAX_TEXT = 280, MAX_TOP = 10;
 const USER_RE = /^[a-z0-9_]{3,20}$/;
 const SAFE_MEDIA = /^https:\/\/[a-z0-9.-]+\.(apple|mzstatic)\.com\//i;
 const SAFE_LINK = /^https:\/\/(music|itunes|geo\.music)\.apple\.com\//i;
+const PLAYLIST_APPS = [
+  [/^https:\/\/open\.spotify\.com\//i, "Spotify"], [/^https:\/\/(music|embed\.music)\.apple\.com\//i, "Apple Music"],
+  [/^https:\/\/music\.youtube\.com\//i, "YouTube Music"], [/^https:\/\/(www\.)?youtube\.com\/playlist/i, "YouTube"],
+  [/^https:\/\/(www\.)?deezer\.com\/|^https:\/\/link\.deezer\.com\//i, "Deezer"], [/^https:\/\/(www\.|on\.)?soundcloud\.com\//i, "SoundCloud"],
+  [/^https:\/\/(listen\.)?tidal\.com\//i, "TIDAL"], [/^https:\/\/music\.amazon\.[a-z.]+\//i, "Amazon Music"]
+];
+const playlistApp = url => (PLAYLIST_APPS.find(([re]) => re.test(url || "")) || [])[1] || null;
+const MAX_ALBUM = 25;
+const COVERS = ["💿", "🎧", "🔥", "🌙", "☀️", "💔", "🏃", "🚗", "🌧️", "🎉", "🌊", "🌸", "✨", "🎸", "🎹", "☕"];
 
 function h(tag, attrs, ...kids) {
   const el = document.createElement(tag);
@@ -94,7 +127,10 @@ const ICON = {
   trash: '<svg viewBox="0 0 24 24"><path d="M6 7h12l-1 14H7zM9 3h6l1 2h4v2H4V5h4z"/></svg>',
   home: '<svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>',
   plus: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4z"/></svg>',
-  user: '<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/></svg>'
+  user: '<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/></svg>',
+  gear: '<svg viewBox="0 0 24 24"><path d="M19.4 13a7.6 7.6 0 000-2l2.1-1.6-2-3.5-2.5 1a7.7 7.7 0 00-1.7-1L15 3h-4l-.4 2.7a7.7 7.7 0 00-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 000 2l-2.1 1.6 2 3.5 2.5-1a7.7 7.7 0 001.7 1L11 21h4l.4-2.7a7.7 7.7 0 001.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z" transform="translate(-1 0)"/></svg>',
+  note: '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1011 17.5V8h7V3z"/></svg>',
+  mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3l2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>'
 };
 let toastTimer;
 function toast(msg) {
@@ -175,7 +211,7 @@ function setBtn(btn, playing, pct) {
   btn.setAttribute("aria-label", playing ? "Pause" : "Play");
   btn.querySelector(".ring").style.setProperty("--p", (pct || 0) + "%");
 }
-function stopAudio() { player.audio.pause(); setBtn(player.btn, false, 0); player.btn = null; }
+function stopAudio() { player.audio.pause(); setBtn(player.btn, false, 0); player.btn?.closest(".track")?.classList.remove("playing"); player.btn = null; }
 player.audio.addEventListener("timeupdate", () => {
   const a = player.audio;
   const pct = Math.min(100, ((a.currentTime - player.start) / CLIP) * 100);
@@ -189,6 +225,7 @@ function playClip(track, start, btn) {
   if (!SAFE_MEDIA.test(track.preview)) return;
   const a = player.audio;
   player.btn = btn; player.start = start; player.stopAt = start + CLIP;
+  btn.closest(".track")?.classList.add("playing");
   if (a.src !== track.preview) a.src = track.preview;
   const go = () => { try { a.currentTime = start; } catch {} a.play().catch(() => stopAudio()); };
   if (a.readyState >= 1) go(); else { a.addEventListener("loadedmetadata", go, { once: true }); a.load(); }
@@ -202,7 +239,7 @@ function playButton(track, start) {
 function trackRow(track, opts = {}) {
   const img = h("img", { src: SAFE_MEDIA.test(track.art) ? track.art : "", alt: "", loading: "lazy", width: 56, height: 56, decoding: "async" });
   return h("div", { class: "track" + (opts.sel ? " sel" : ""), onclick: opts.onclick },
-    img,
+    h("div", { class: "disc" }, h("span", { class: "vinyl", "aria-hidden": "true" }), img),
     h("div", { class: "info" },
       h("div", { class: "name" }, track.name),
       h("div", { class: "artist" }, track.artist),
@@ -211,11 +248,101 @@ function trackRow(track, opts = {}) {
     opts.extra || null);
 }
 
+// ---------- Notas musicales suaves (Web Audio, escala pentatónica: siempre suenan en armonía) ----------
+const sfx = (() => {
+  let ctx = null, step = 0;
+  const KEY = "coro_sound";
+  const PENTA = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51]; // Do mayor pentatónica
+  const get = () => { try { return localStorage.getItem(KEY) !== "0"; } catch { return true; } };
+  let on = get();
+  function tone(freq, when, dur, vol) {
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine"; o2.type = "triangle"; o.frequency.value = freq; o2.frequency.value = freq * 2;
+    const g2 = ctx.createGain(); g2.gain.value = 0.15;
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(ctx.destination);
+    const t0 = ctx.currentTime + when;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.start(t0); o2.start(t0); o.stop(t0 + dur + 0.05); o2.stop(t0 + dur + 0.05);
+  }
+  function play(kind = "tap") {
+    if (!on) return;
+    try {
+      ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === "suspended") ctx.resume();
+      const v = 0.05;
+      if (kind === "ok") [0, 2, 4, 5].forEach((n, i) => tone(PENTA[n], i * 0.07, 0.6, v));          // guardar / publicar: arpegio
+      else if (kind === "like") { tone(PENTA[4], 0, 0.35, v); tone(PENTA[7], 0.08, 0.5, v); }      // me gusta: salto alegre
+      else if (kind === "soft") tone(PENTA[step++ % 5] / 2, 0, 0.18, v * 0.35);                    // teclear: muy suave
+      else if (kind === "down") { tone(PENTA[3], 0, 0.3, v); tone(PENTA[0], 0.08, 0.45, v); }      // quitar / borrar
+      else { const seq = [0, 1, 2, 3, 4, 3, 2, 1]; tone(PENTA[seq[step++ % seq.length]], 0, 0.4, v); } // toque normal: melodía
+    } catch {}
+  }
+  return { play, get on() { return on; }, set(v) { on = v; try { localStorage.setItem(KEY, v ? "1" : "0"); } catch {} if (v) play("ok"); } };
+})();
+document.addEventListener("pointerdown", e => {
+  const el = e.target.closest("button, a, select, input[type=range], input[type=color], .track[onclick], .results .track");
+  if (!el || el.disabled) return;
+  sfx.play(el.dataset.sfx || "tap");
+}, { capture: true, passive: true });
+document.addEventListener("keydown", e => { if (e.target.matches("input[type=text], input[type=search], input[type=email], textarea") && e.key.length === 1) sfx.play("soft"); }, { capture: true, passive: true });
+
+// ---------- Colores personalizables ----------
+const HEX = /^#[0-9a-f]{6}$/i;
+const PALETTES = [
+  { name: "Noche", bg: "#0f0c1d", a: "#ff4f8b", b: "#7c5cff" },
+  { name: "Atardecer", bg: "#1c0f14", a: "#ff7a45", b: "#ffc53d" },
+  { name: "Océano", bg: "#06141f", a: "#22d3ee", b: "#3b82f6" },
+  { name: "Bosque", bg: "#0b1710", a: "#4ade80", b: "#facc15" },
+  { name: "Neón", bg: "#0a0a0a", a: "#39ff14", b: "#ff00e6" },
+  { name: "Chicle", bg: "#fff0f6", a: "#ec4899", b: "#8b5cf6" },
+  { name: "Vainilla", bg: "#fbf7ef", a: "#e4572e", b: "#2e86ab" },
+  { name: "Lavanda", bg: "#f3f0ff", a: "#7c3aed", b: "#14b8a6" }
+];
+function lum(hex) { const n = parseInt(hex.slice(1), 16); const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function themeVars(th) {
+  if (!th || !HEX.test(th.bg) || !HEX.test(th.a) || !HEX.test(th.b)) return null;
+  const light = lum(th.bg) > 0.4;
+  const text = light ? "#1d1a2b" : "#f4f1ff";
+  return { "--bg": th.bg, "--accent": th.a, "--accent2": th.b, "--text": text,
+    "--card": `color-mix(in srgb, ${th.bg} ${light ? 88 : 90}%, ${light ? "#ffffff" : "#ffffff"} ${light ? 12 : 10}%)`,
+    "--card2": `color-mix(in srgb, ${th.bg} 80%, ${th.b} 20%)`,
+    "--line": `color-mix(in srgb, ${th.bg} 75%, ${th.b} 25%)`,
+    "--muted": `color-mix(in srgb, ${text} 62%, ${th.bg} 38%)`,
+    "--glass": `color-mix(in srgb, ${th.bg} 88%, transparent)` };
+}
+function applyVars(el, th) { const v = themeVars(th); if (!v) return false; for (const [k, x] of Object.entries(v)) el.style.setProperty(k, x); return true; }
+const theme = {
+  get() { try { const x = JSON.parse(localStorage.getItem("coro_theme")); return themeVars(x) ? x : null; } catch { return null; } },
+  apply(th) {
+    th = th && themeVars(th) ? th : PALETTES[0];
+    applyVars(document.documentElement, th);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", th.bg);
+  },
+  set(th) { try { localStorage.setItem("coro_theme", JSON.stringify(th)); } catch {} theme.apply(th); }
+};
+theme.apply(theme.get());
+
+// ---------- Instalar en el teléfono ----------
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installPrompt = e; });
+const isInstalled = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+function installBox() {
+  if (isInstalled()) return h("div", { class: "muted" }, t("installed"));
+  const box = h("div", { class: "col" });
+  if (installPrompt) box.append(h("button", { class: "btn", "data-sfx": "ok", onclick: async () => { installPrompt.prompt(); await installPrompt.userChoice.catch(() => {}); installPrompt = null; box.replaceWith(installBox()); } }, t("install_btn")));
+  box.append(h("div", { class: "muted small" }, isIOS() ? t("install_ios") : t("install_android")));
+  return box;
+}
+
 // ---------- Datos: modo prueba (local) ----------
 function LocalStore() {
   const KEY = "coro_demo_v1";
   let db; try { db = JSON.parse(localStorage.getItem(KEY)); } catch {}
-  db ||= { me: null, posts: [], likes: {}, tops: {} };
+  db ||= { me: null, posts: [], likes: {}, tops: {}, albums: [] };
+  db.albums ||= [];
   if (!db.tops) { db.tops = {}; if (db.top?.length) db.tops[monthKey()] = db.top; delete db.top; } // datos de la versión anterior
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {} };
   const decorate = p => ({ ...p, user: db.me, likes: db.likes[p.id] ? 1 : 0, liked: !!db.likes[p.id] });
@@ -233,6 +360,16 @@ function LocalStore() {
     async top(_u, month) { return db.tops[month] || []; },
     async topMonths() { return Object.keys(db.tops).filter(k => db.tops[k].length).sort().reverse(); },
     async saveTop(list, month) { db.tops[month] = list.slice(0, MAX_TOP); save(); },
+    async saveTheme(th) { if (db.me) { db.me.theme = th; save(); } },
+    async albums() { return db.albums.slice().sort((a, b) => b.updated_at.localeCompare(a.updated_at)); },
+    async album(id) { return db.albums.find(a => String(a.id) === String(id)) || null; },
+    async saveAlbum(a) {
+      const now = new Date().toISOString();
+      if (a.id) { const i = db.albums.findIndex(x => x.id === a.id); if (i >= 0) db.albums[i] = { ...db.albums[i], ...a, updated_at: now }; }
+      else { a = { ...a, id: Date.now(), user_id: "local", created_at: now, updated_at: now }; db.albums.push(a); }
+      save(); return a.id;
+    },
+    async deleteAlbum(id) { db.albums = db.albums.filter(a => a.id !== id); save(); },
     async report() {},
     async signOut() {}
   };
@@ -306,6 +443,16 @@ async function CloudStore(cfg) {
     async report(postId, reason) { const { error } = await sb.from("reports").insert({ post_id: postId, reason: clean(reason, 200) }); err(error); },
     async signIn(email, password) { const { error } = await sb.auth.signInWithPassword({ email, password }); err(error); meCache = undefined; },
     async signUp(email, password) { const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } }); err(error); meCache = undefined; return data; },
+    async saveTheme(th) { const id = await uid(); const { error } = await sb.from("profiles").update({ theme: th }).eq("id", id); err(error); if (meCache) meCache.theme = th; },
+    async albums(userId) { const { data, error } = await sb.from("albums").select("*").eq("user_id", userId).order("updated_at", { ascending: false }).limit(50); err(error); return data || []; },
+    async album(id) { const { data, error } = await sb.from("albums").select("*").eq("id", id).maybeSingle(); err(error); return data; },
+    async saveAlbum(a) {
+      const row = { title: a.title, emoji: a.emoji, note: a.note, link: a.link || null, songs: a.songs, updated_at: new Date().toISOString() };
+      if (a.id) { const { error } = await sb.from("albums").update(row).eq("id", a.id); err(error); return a.id; }
+      const { data, error } = await sb.from("albums").insert(row).select("id").single(); err(error); return data.id;
+    },
+    async deleteAlbum(id) { const { error } = await sb.from("albums").delete().eq("id", id); err(error); },
+    async signInGuest() { const { error } = await sb.auth.signInAnonymously(); err(error); meCache = undefined; },
     async signInWith(provider) {
       const { error } = await sb.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + location.pathname } }); err(error);
     },
@@ -329,7 +476,9 @@ function renderNav(me) {
     link("#/nuevo", ICON.plus, t("new"), "plus"),
     link(me ? "#/u/" + me.username : "#/yo", ICON.user, t("me")));
   const hdr = document.getElementById("hdr");
-  hdr.replaceChildren();
+  const snd = h("button", { class: "icon-btn", "aria-label": t("sounds"), "aria-pressed": String(sfx.on), html: sfx.on ? ICON.note : ICON.mute });
+  snd.onclick = () => { sfx.set(!sfx.on); snd.innerHTML = sfx.on ? ICON.note : ICON.mute; snd.setAttribute("aria-pressed", String(sfx.on)); toast(t("sounds") + ": " + (sfx.on ? t("on") : t("off"))); };
+  hdr.replaceChildren(snd, h("a", { class: "icon-btn", href: "#/ajustes", "aria-label": t("settings"), html: ICON.gear }));
   if (S.mode === "cloud") {
     hdr.append(me || state.session
       ? h("button", { class: "icon-btn", onclick: async () => { await S.signOut(); state.session = null; location.hash = "#/"; route(); } }, t("logout"))
@@ -339,7 +488,7 @@ function renderNav(me) {
 
 function postCard(p, me, onChange) {
   const mine = me && p.user.id === me.id;
-  const likeBtn = h("button", { class: "icon-btn" + (p.liked ? " on" : ""), "aria-pressed": String(!!p.liked), "aria-label": t("like") },
+  const likeBtn = h("button", { "data-sfx": "like", class: "icon-btn" + (p.liked ? " on" : ""), "aria-pressed": String(!!p.liked), "aria-label": t("like") },
     h("span", { html: ICON.heart }), h("span", null, String(p.likes || 0)));
   likeBtn.onclick = async () => {
     if (!me) return toast(t("login_needed"));
@@ -348,7 +497,7 @@ function postCard(p, me, onChange) {
     catch { toast(t("error")); }
   };
   const actions = [likeBtn];
-  if (mine) actions.push(h("button", { class: "icon-btn", "aria-label": t("del"), onclick: async () => {
+  if (mine) actions.push(h("button", { class: "icon-btn", "aria-label": t("del"), "data-sfx": "down", onclick: async () => {
     if (!confirm(t("confirm_del"))) return;
     try { await S.deletePost(p.id); toast(t("deleted")); onChange?.(); } catch { toast(t("error")); }
   } }, h("span", { html: ICON.trash })));
@@ -409,7 +558,7 @@ async function viewCompose(me) {
   const count = h("div", { class: "count" }, "0/" + MAX_TEXT);
   text.addEventListener("input", () => { count.textContent = text.value.length + "/" + MAX_TEXT; });
   const chosen = h("div", { class: "col" });
-  const pub = h("button", { class: "btn", disabled: true }, t("publish"));
+  const pub = h("button", { class: "btn", disabled: true, "data-sfx": "ok" }, t("publish"));
   const renderChosen = () => {
     if (!track) return chosen.replaceChildren();
     const lblText = () => t("from") + " " + start + " → " + (start + CLIP) + " s";
@@ -443,9 +592,9 @@ function topEditor(list, onSave, prev) {
       h("div", { class: "top-list" }, ...list.map((s, i) => trackRow(s, { noPlay: true, extra: h("div", { class: "mini" },
         h("button", { class: "icon-btn", disabled: i === 0, "aria-label": t("up"), onclick: () => { [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); } }, "↑"),
         h("button", { class: "icon-btn", disabled: i === list.length - 1, "aria-label": t("down"), onclick: () => { [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); } }, "↓"),
-        h("button", { class: "icon-btn", "aria-label": t("remove"), onclick: () => { list.splice(i, 1); draw(); } }, "✕")) }))),
+        h("button", { class: "icon-btn", "aria-label": t("remove"), "data-sfx": "down", onclick: () => { list.splice(i, 1); draw(); } }, "✕")) }))),
       list.length < MAX_TOP ? songSearch(s => { if (!list.some(x => x.id === s.id)) list.push(s); draw(); }) : null,
-      h("button", { class: "btn", onclick: async e => { e.target.disabled = true; try { await onSave(list); toast(t("saved")); } catch { toast(t("error")); } e.target.disabled = false; } }, t("save")));
+      h("button", { class: "btn", "data-sfx": "ok", onclick: async e => { e.target.disabled = true; try { await onSave(list); toast(t("saved")); } catch { toast(t("error")); } e.target.disabled = false; } }, t("save")));
   };
   draw();
   return box;
@@ -456,7 +605,7 @@ async function viewEdit(me, first) {
   const d = h("input", { type: "text", value: me?.display_name || (first && S.authName ? await S.authName() : ""), maxlength: 40, "aria-label": t("display") });
   const b = h("textarea", { maxlength: 160, "aria-label": t("bio"), style: "min-height:60px" }, me?.bio || "");
   const c = h("select", { "aria-label": t("country") }, ...[...new Set([state.country, ...COUNTRIES])].sort((a, z) => regionName(a).localeCompare(regionName(z), LANG)).map(code => h("option", { value: code, selected: code === (me?.country || state.country) }, regionName(code))));
-  const save = h("button", { class: "btn" }, first ? t("start") : t("save"));
+  const save = h("button", { class: "btn", "data-sfx": "ok" }, first ? t("start") : t("save"));
   save.onclick = async () => {
     const username = u.value.trim().toLowerCase();
     if (!USER_RE.test(username)) return toast(t("user_bad"));
@@ -489,7 +638,100 @@ async function shareLink(url, title) {
   try { await navigator.clipboard.writeText(url); toast(t("copied")); } catch { prompt(t("share"), url); }
 }
 
-async function viewProfile(me, username, wantMonth) {
+function albumTile(a, owner) {
+  const songs = Array.isArray(a.songs) ? a.songs : [];
+  return h("a", { class: "album", href: "#/u/" + owner.username + "/a/" + a.id },
+    h("div", { class: "album-cover", "aria-hidden": "true" }, a.emoji || "💿"),
+    h("div", { class: "album-title" }, a.title),
+    h("div", { class: "muted small" }, t("songs_n", { n: songs.length }) + (playlistApp(a.link) ? " · " + playlistApp(a.link) : "")));
+}
+
+async function viewAlbum(me, username, id) {
+  const p = me && me.username === username ? me : await S.profileByUsername(username);
+  const a = p ? await S.album(id) : null;
+  if (!p || !a || (a.user_id !== p.id && S.mode === "cloud")) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
+  const isMe = me && me.id === p.id;
+  const songs = (Array.isArray(a.songs) ? a.songs : []).filter(x => x && x.name);
+  const app = playlistApp(a.link);
+  const head = h("div", { class: "card col album-head" },
+    h("a", { class: "icon-btn", href: "#/u/" + p.username + "/albums", style: "align-self:flex-start" }, "← @" + p.username),
+    h("div", { class: "row" }, h("div", { class: "album-cover big", "aria-hidden": "true" }, a.emoji || "💿"),
+      h("div", { style: "flex:1;min-width:0" }, h("h2", { style: "margin:0;overflow-wrap:anywhere" }, a.title),
+        h("div", { class: "muted small" }, t("songs_n", { n: songs.length })))),
+    a.note ? h("p", { class: "text", style: "margin:0" }, a.note) : null,
+    app ? h("a", { class: "btn ghost", href: a.link, target: "_blank", rel: "noopener noreferrer", style: "text-decoration:none;text-align:center" }, t("open_in", { app }) + " ↗") : null,
+    h("div", { class: "row", style: "gap:8px;flex-wrap:wrap" },
+      h("button", { class: "icon-btn", onclick: () => shareLink(location.href, a.title + " · @" + p.username) }, t("share") + " ↗"),
+      isMe ? h("a", { class: "icon-btn", href: "#/album/" + a.id }, t("edit_album")) : null));
+  if (!isMe) applyVars(head, p.theme);
+  $app.replaceChildren(head, songs.length ? h("div", { class: "card col" }, ...songs.map(x => trackRow(x, { link: true }))) : null);
+}
+
+async function viewAlbumEditor(me, id) {
+  if (!me) return needProfile();
+  const a = id === "nuevo" ? { title: "", emoji: "💿", note: "", link: "", songs: [] } : await S.album(id);
+  if (!a || (a.user_id && a.user_id !== me.id && S.mode === "cloud")) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
+  const list = (Array.isArray(a.songs) ? a.songs : []).slice();
+  let emoji = a.emoji || "💿";
+  const title = h("input", { type: "text", maxlength: 60, value: a.title || "", "aria-label": t("album_title"), placeholder: t("album_title") });
+  const note = h("textarea", { maxlength: 200, "aria-label": t("album_note"), placeholder: t("album_note"), style: "min-height:60px" }, a.note || "");
+  const link = h("input", { type: "url", maxlength: 300, value: a.link || "", "aria-label": t("album_link"), placeholder: "https://open.spotify.com/playlist/…", inputmode: "url" });
+  const covers = h("div", { class: "covers", role: "radiogroup", "aria-label": t("cover") });
+  const drawCovers = () => covers.replaceChildren(...COVERS.map(c => h("button", { type: "button", role: "radio", "aria-checked": String(c === emoji), class: c === emoji ? "act" : "", onclick: () => { emoji = c; drawCovers(); } }, c)));
+  drawCovers();
+  const songsBox = h("div", { class: "col" });
+  const drawSongs = () => songsBox.replaceChildren(
+    h("div", { class: "col" }, ...list.map((x, i) => trackRow(x, { noPlay: true, extra: h("button", { class: "icon-btn", "data-sfx": "down", "aria-label": t("remove"), onclick: () => { list.splice(i, 1); drawSongs(); } }, "✕") }))),
+    list.length < MAX_ALBUM ? songSearch(x => { if (!list.some(y => y.id === x.id)) list.push(x); drawSongs(); }) : null);
+  drawSongs();
+  const save = h("button", { class: "btn", "data-sfx": "ok" }, t("save"));
+  save.onclick = async () => {
+    const tt = clean(title.value, 60); if (!tt) return toast(t("need_title"));
+    const ln = link.value.trim(); if (ln && !playlistApp(ln)) return toast(t("album_link_bad"));
+    save.disabled = true;
+    try {
+      const newId = await S.saveAlbum({ id: a.id, title: tt, emoji, note: clean(note.value, 200), link: ln, songs: list.slice(0, MAX_ALBUM) });
+      toast(t("saved")); location.hash = "#/u/" + me.username + "/a/" + newId;
+    } catch (e) { toast(e.message || t("error")); save.disabled = false; }
+  };
+  const parts = [h("div", { class: "card col" },
+    h("h2", { style: "margin:0" }, a.id ? t("edit_album") : t("album_new")),
+    h("label", null, t("album_title")), title, h("label", null, t("cover")), covers,
+    h("label", null, t("album_note")), note, h("label", null, t("album_link")), link,
+    h("label", null, t("album_songs")), songsBox, save)];
+  if (a.id) parts.push(h("button", { class: "icon-btn", "data-sfx": "down", style: "align-self:center;margin:0 auto;display:flex", onclick: async () => {
+    if (!confirm(t("album_confirm_del"))) return;
+    try { await S.deleteAlbum(a.id); location.hash = "#/u/" + me.username + "/albums"; } catch { toast(t("error")); }
+  } }, h("span", { html: ICON.trash }), t("album_del")));
+  $app.replaceChildren(...parts);
+}
+
+async function viewSettings(me) {
+  const cur = theme.get() || PALETTES[0];
+  const pick = th => { theme.set(th); if (me) S.saveTheme(th).catch(() => {}); draw(); };
+  const box = h("div", null);
+  const draw = () => {
+    const now = theme.get() || PALETTES[0];
+    const inp = (key, label) => { const i = h("input", { type: "color", value: now[key], "aria-label": label }); i.addEventListener("input", () => { const th = { ...(theme.get() || PALETTES[0]), [key]: i.value }; theme.set(th); }); i.addEventListener("change", () => pick({ ...(theme.get() || PALETTES[0]) })); return h("label", { class: "swatch-in" }, i, label); };
+    box.replaceChildren(
+      h("div", { class: "card col" },
+        h("h2", { style: "margin:0" }, t("colors")), h("div", { class: "muted small" }, t("colors_sub")),
+        h("div", { class: "palettes" }, ...PALETTES.map(pl => {
+          const sel = pl.bg === now.bg && pl.a === now.a && pl.b === now.b;
+          return h("button", { type: "button", class: "palette" + (sel ? " act" : ""), "aria-pressed": String(sel), onclick: () => pick({ bg: pl.bg, a: pl.a, b: pl.b }), style: `background:${pl.bg};color:${lum(pl.bg) > 0.4 ? "#1d1a2b" : "#fff"}` },
+            h("span", { class: "dots" }, h("i", { style: "background:" + pl.a }), h("i", { style: "background:" + pl.b })), pl.name);
+        })),
+        h("div", { class: "row", style: "flex-wrap:wrap;gap:10px" }, inp("bg", t("c_bg")), inp("a", t("c_1")), inp("b", t("c_2")))),
+      h("div", { class: "card col" },
+        h("h2", { style: "margin:0" }, t("sounds")), h("div", { class: "muted small" }, t("sounds_sub")),
+        h("button", { class: "btn" + (sfx.on ? "" : " ghost"), onclick: () => { sfx.set(!sfx.on); renderNav(me); draw(); } }, sfx.on ? "🎵 " + t("on") : "🔇 " + t("off"))),
+      h("div", { class: "card col" }, h("h2", { style: "margin:0" }, t("install")), installBox()));
+  };
+  void cur; draw();
+  $app.replaceChildren(box);
+}
+
+async function viewProfile(me, username, wantMonth, tab) {
   const p = me && me.username === username ? me : await S.profileByUsername(username);
   if (!p) return $app.replaceChildren(h("div", { class: "empty" }, t("not_found")));
   const isMe = me && me.id === p.id;
@@ -525,14 +767,20 @@ async function viewProfile(me, username, wantMonth) {
         content.replaceChildren(...[picker, body].filter(Boolean));
         await drawMonth();
       } else {
+        if (which === 1) {
+          const list = await S.albums(p.id);
+          content.replaceChildren(
+            isMe ? h("a", { class: "btn", href: "#/album/nuevo", style: "display:block;text-align:center;text-decoration:none;margin-bottom:14px" }, "+ " + t("album_new")) : null,
+            list.length ? h("div", { class: "albums" }, ...list.map(a => albumTile(a, p))) : h("div", { class: "empty" }, isMe ? t("album_empty_me") : t("album_empty")));
+          return;
+        }
         const posts = await S.userPosts(p.id);
-        content.replaceChildren(...(posts.length ? posts.map(x => postCard(x, me, () => show(1))) : [h("div", { class: "empty" }, t("no_posts"))]));
+        content.replaceChildren(...(posts.length ? posts.map(x => postCard(x, me, () => show(2))) : [h("div", { class: "empty" }, t("no_posts"))]));
       }
     } catch { content.replaceChildren(h("div", { class: "empty" }, t("error"))); }
   };
-  tabs.append(h("button", { role: "tab", onclick: () => show(0) }, t("top_month")), h("button", { role: "tab", onclick: () => show(1) }, t("posts")));
-  $app.replaceChildren(
-    h("div", { class: "card" },
+  tabs.append(h("button", { role: "tab", onclick: () => show(0) }, t("tab_top")), h("button", { role: "tab", onclick: () => show(1) }, t("albums")), h("button", { role: "tab", onclick: () => show(2) }, t("posts")));
+  const head = h("div", { class: "card profile-head" },
       h("div", { class: "row" }, avatar(p, true),
         h("div", { style: "flex:1;min-width:0" },
           h("h2", { style: "margin:0;overflow-wrap:anywhere" }, p.display_name || p.username),
@@ -540,9 +788,10 @@ async function viewProfile(me, username, wantMonth) {
       p.bio ? h("p", { class: "text" }, p.bio) : null,
       isMe ? h("div", { class: "row", style: "margin-top:8px;flex-wrap:wrap;gap:8px" },
         h("a", { class: "btn", href: "#/top", style: "text-decoration:none" }, t("my_top")),
-        h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null),
-    tabs, content);
-  show(0);
+        h("a", { class: "btn ghost", href: "#/editar", style: "text-decoration:none" }, t("edit"))) : null);
+  if (!isMe) applyVars(head, p.theme); // el perfil de cada persona se ve con SUS colores
+  $app.replaceChildren(head, tabs, content);
+  show(tab === "albums" ? 1 : 0);
 }
 
 function viewLogin() {
@@ -569,7 +818,13 @@ function viewLogin() {
     const b = e.currentTarget; b.disabled = true;
     try { await S.signInWith(p); } catch (x) { toast(x.message || t("error")); b.disabled = false; }
   } }, h("span", { html: PROVIDERS[p].icon }), PROVIDERS[p].label));
-  $app.replaceChildren(h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw));
+  const guest = window.CORO_CONFIG?.allowGuest === false ? null : h("div", { class: "col", style: "border-top:1px solid var(--line);padding-top:12px;margin-top:4px" },
+    h("button", { class: "btn ghost", type: "button", onclick: async e => {
+      const b = e.currentTarget; b.disabled = true;
+      try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; route(); } catch (x) { toast(x.message || t("error")); b.disabled = false; }
+    } }, t("guest")),
+    h("div", { class: "muted small", style: "text-align:center" }, t("guest_sub")));
+  $app.replaceChildren(h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw, guest));
 }
 
 function needProfile() { location.hash = S.mode === "cloud" && !state.session ? "#/entrar" : "#/yo"; }
@@ -582,6 +837,7 @@ async function route() {
   if (/[?&](code|error)=/.test(location.search)) history.replaceState(null, "", location.pathname + location.hash);
   if (S.mode === "cloud" && state.session && !me && hash !== "#/yo") { location.hash = "#/yo"; return; }
   if (me?.country) state.country = me.country;
+  if (me?.theme && !theme.get() && themeVars(me.theme)) theme.set(me.theme);
   renderNav(me);
   window.scrollTo(0, 0);
   try {
@@ -593,7 +849,13 @@ async function route() {
     }
     if (hash === "#/editar") return me ? viewEdit(me, false) : needProfile();
     if (hash === "#/top") return await viewTopEditor(me);
-    if (hash.startsWith("#/u/")) { const [u, m] = hash.slice(4).split("/"); return await viewProfile(me, u.toLowerCase(), m); }
+    if (hash === "#/ajustes") return await viewSettings(me);
+    if (hash.startsWith("#/album/")) return await viewAlbumEditor(me, hash.slice(8));
+    if (hash.startsWith("#/u/")) {
+      const [u, m, id] = hash.slice(4).split("/");
+      if (m === "a" && id) return await viewAlbum(me, u.toLowerCase(), id);
+      return await viewProfile(me, u.toLowerCase(), m === "albums" ? null : m, m === "albums" ? "albums" : null);
+    }
     return viewFeed(me);
   } catch { $app.replaceChildren(h("div", { class: "empty" }, t("error"))); }
 }

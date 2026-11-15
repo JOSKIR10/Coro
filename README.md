@@ -21,8 +21,14 @@ que ya tienen licencia, y cada canción enlaza a "Escuchar completa".
 - Todo el texto se muestra como texto plano (no se puede inyectar código).
 - Solo se aceptan audios e imágenes de servidores oficiales de Apple.
 
+## Más funciones
+- **Álbumes de recomendación** en el perfil (hasta 25 canciones, portada con emoji, nota y enlace a tu playlist de Spotify, Apple Music, YouTube Music, Deezer…).
+- **Colores a tu manera**: 8 paletas o combina fondo + 2 colores. Tu perfil se ve con tus colores para quien lo visite.
+- **Notas musicales suaves** al tocar (escala pentatónica, siempre en armonía). Se silencian con el ícono 🎵 de arriba.
+- **Instalar en el teléfono** desde Ajustes (⚙️).
+
 ## Inicio de sesión
-Correo y contraseña, **Facebook** y **Apple** (los dos últimos se activan en `config.js` → `loginProviders` cuando estén configurados en Supabase).
+Sin cuenta (perfil invitado), correo y contraseña, **Facebook** y **Apple** (los dos últimos se activan en `config.js` → `loginProviders` cuando estén configurados en Supabase).
 
 ## Pasos para abrirla al mundo (gratis)
 Guía detallada, paso a paso: [GUIA-CONFIGURACION.md](GUIA-CONFIGURACION.md).

@@ -10,5 +10,7 @@ window.CORO_CONFIG = {
   supabaseAnonKey: "",
   // Botones extra en "Entrar". Activa cada uno también en Supabase > Authentication > Providers.
   // Opciones: "apple", "facebook". Pon solo los que ya configuraste, por ejemplo: ["facebook"]
-  loginProviders: []
+  loginProviders: [],
+  // Permite "Entrar sin cuenta" (hay que activar "Allow anonymous sign-ins" en Supabase > Authentication > Sign In / Providers).
+  allowGuest: true
 };

@@ -24,7 +24,9 @@ Cuando termines cada parte, pásale a Claude lo que dice "Mándale a Claude" y �
 6. En el menú de la izquierda toca **Authentication** y luego **URL Configuration**.
    - **Site URL:** `https://joskir10.github.io/Coro/` y toca **Save**.
    - En **Redirect URLs** toca **Add URL**, pega `https://joskir10.github.io/Coro/` y guarda.
-7. Toca el engrane **Project Settings** y luego **API** (o **Data API** / **API Keys**). Copia:
+7. Para que la gente pueda **entrar sin cuenta** (sin correo ni redes): en **Authentication** toca
+   **Sign In / Providers** (o **Settings**), activa **Allow anonymous sign-ins** y guarda.
+8. Toca el engrane **Project Settings** y luego **API** (o **Data API** / **API Keys**). Copia:
    - **Project URL** (algo como `https://abcd1234.supabase.co`)
    - La clave **anon public** (un texto largo que empieza con `eyJ`).
 
@@ -59,6 +61,13 @@ Necesitas tu Project URL de la Parte 1. Tu dirección de regreso es:
    para que cualquier persona pueda entrar, no solo tú.
 
 **Mándale a Claude:** "Facebook listo". (No hace falta mandar la clave secreta.)
+
+---
+
+## ¿Y Instagram?
+
+Instagram ya no ofrece "Entrar con Instagram" para apps nuevas (Meta lo cerró en diciembre de 2024),
+y Supabase tampoco lo tiene. Como Instagram es de Meta, **"Continuar con Facebook" es la opción más cercana**.
 
 ---
 
