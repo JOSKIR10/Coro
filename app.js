@@ -384,47 +384,28 @@ document.addEventListener("pointerdown", e => {
 // ---------- Animaciones "vivas" ----------
 const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NOTE_CHARS = ["♪", "♫", "♬", "♩", "𝄞"];
-// Al tocar: una notita sale del dedo y flota hacia arriba
-function noteBurst(x, y, chars = NOTE_CHARS, n = 1) {
+// Al tocar: una onda suave sale desde el dedo (más intensa al publicar o dar me gusta)
+function ripple(x, y, strong) {
   if (calm()) return;
-  for (let i = 0; i < n; i++) {
-    const el = document.createElement("span");
-    el.className = "tap-note"; el.textContent = chars[Math.floor(Math.random() * chars.length)];
-    el.style.left = x + "px"; el.style.top = y + "px";
-    el.style.setProperty("--dx", (Math.random() * 60 - 30) + "px");
-    el.style.setProperty("--rot", (Math.random() * 50 - 25) + "deg");
-    el.style.animationDelay = (i * 60) + "ms";
-    el.style.color = Math.random() > .5 ? "var(--accent)" : "var(--accent2)";
-    document.body.append(el);
-    setTimeout(() => el.remove(), 1300 + i * 60);
-  }
+  const el = document.createElement("span");
+  el.className = "tap-ripple" + (strong ? " strong" : "");
+  el.style.left = x + "px"; el.style.top = y + "px";
+  document.body.append(el);
+  setTimeout(() => el.remove(), 700);
 }
 document.addEventListener("pointerdown", e => {
   const el = e.target.closest("button, a, .results .track");
   if (!el || el.disabled) return;
   const kind = el.dataset.sfx;
-  noteBurst(e.clientX, e.clientY, kind === "like" ? ["❤", "💖", "♪"] : NOTE_CHARS, kind === "ok" || kind === "like" ? 4 : 1);
+  ripple(e.clientX, e.clientY, kind === "ok" || kind === "like");
   el.classList.remove("boing"); void el.offsetWidth; el.classList.add("boing");
 }, { passive: true });
-// Lluvia de notas que suben desde abajo (bienvenida)
-function noteRain(host) {
-  if (calm()) return () => {};
-  const spawn = () => {
-    if (!host.isConnected) return stop();
-    const el = document.createElement("span");
-    el.className = "rise-note"; el.textContent = NOTE_CHARS[Math.floor(Math.random() * NOTE_CHARS.length)];
-    el.style.left = (Math.random() * 100) + "%";
-    el.style.fontSize = (16 + Math.random() * 28) + "px";
-    el.style.setProperty("--dur", (5 + Math.random() * 5) + "s");
-    el.style.setProperty("--sway", (Math.random() * 80 - 40) + "px");
-    el.style.color = ["var(--accent)", "var(--accent2)", "var(--text)"][Math.floor(Math.random() * 3)];
-    host.append(el);
-    setTimeout(() => el.remove(), 10500);
-  };
-  for (let i = 0; i < 6; i++) setTimeout(spawn, i * 250);
-  const id = setInterval(spawn, 420);
-  const stop = () => clearInterval(id);
-  return stop;
+// Ecualizador que baila en la parte de abajo (bienvenida)
+function eqBars(n = 32) {
+  return h("div", { class: "eq-floor", "aria-hidden": "true" }, ...Array.from({ length: n }, (_, i) => {
+    const mid = 1 - Math.abs(i - (n - 1) / 2) / (n / 2); // más altas en el centro
+    return h("i", { style: `--max:${Math.round(25 + mid * 65 + Math.random() * 10)}%;--min:${Math.round(6 + Math.random() * 10)}%;--d:${(0.6 + Math.random() * 0.9).toFixed(2)}s;--del:-${(Math.random() * 1.5).toFixed(2)}s` });
+  }));
 }
 document.addEventListener("keydown", e => { if (e.target.matches("input[type=text], input[type=search], input[type=email], textarea") && e.key.length === 1) sfx.play("soft"); }, { capture: true, passive: true });
 
@@ -1465,7 +1446,7 @@ function viewWelcome() {
     try { await S.signInGuest(); state.session = await S.session(); location.hash = "#/yo"; } catch (x) { toast(friendly(x)); b.disabled = false; }
   };
   $app.replaceChildren(h("div", { class: "welcome" },
-    h("div", { class: "w-orbit", "aria-hidden": "true" }, h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" })), h("span", { class: "n1" }, "♪"), h("span", { class: "n2" }, "♫"), h("span", { class: "n3" }, "♬")),
+    h("div", { class: "w-orbit", "aria-hidden": "true" }, h("i", { class: "wave" }), h("i", { class: "wave w2" }), h("i", { class: "wave w3" }), h("i", { class: "wave w4" }), h("div", { class: "disc huge spin" }, h("span", { class: "vinyl" }))),
     h("div", { class: "w-logo", "aria-label": "Coro" }, ..."Coro".split("").map((c, i) => h("span", { style: `animation-delay:${.15 + i * .09}s`, "aria-hidden": "true" }, c))),
     h("p", { class: "w-tag" }, t("w_tag")),
     h("ul", { class: "w-feats" }, h("li", null, t("w_f1")), h("li", null, t("w_f2")), h("li", null, t("w_f3"))),
@@ -1475,10 +1456,7 @@ function viewWelcome() {
       cloud ? h("a", { class: "btn ghost", href: "#/entrar", style: "text-align:center;text-decoration:none" }, t("w_login")) : null,
       cloud && guestAllowed ? h("button", { class: "icon-btn", style: "justify-content:center", onclick: guest }, t("w_guest")) : null),
     h("div", { class: "muted small", style: "text-align:center" }, t("w_terms") + " ", h("a", { href: "privacidad.html" }, t("w_privacy")), ".")));
-  const rain = h("div", { class: "note-rain", "aria-hidden": "true" });
-  $app.prepend(rain);
-  const stop = noteRain(rain);
-  window.addEventListener("hashchange", stop, { once: true });
+  $app.append(eqBars());
 }
 
 function needProfile() { location.hash = S.mode === "cloud" && !state.session ? "#/entrar" : "#/yo"; }

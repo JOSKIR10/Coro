@@ -193,12 +193,23 @@ body.welcome-mode{padding-bottom:0}
 .capsule .btn.ghost{background:rgba(255,255,255,.2);color:#fff}
 
 /* ---------- Animaciones vivas ---------- */
-.tap-note{position:fixed;z-index:50;pointer-events:none;font-size:20px;font-weight:700;transform:translate(-50%,-50%);animation:tapnote 1.2s cubic-bezier(.2,.7,.3,1) forwards;text-shadow:0 2px 8px rgba(0,0,0,.25)}
-@keyframes tapnote{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-90%) scale(1.15)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-260%) rotate(var(--rot)) scale(.9)}}
-.note-rain{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.tap-ripple{position:fixed;z-index:50;pointer-events:none;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--accent);animation:ripple .6s ease-out forwards}
+.tap-ripple.strong{border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent);animation-duration:.7s}
+@keyframes ripple{to{transform:scale(5);opacity:0}}
 .welcome{position:relative;z-index:1}
-.rise-note{position:absolute;bottom:-40px;opacity:0;animation:rise var(--dur) linear forwards;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 60%,transparent))}
-@keyframes rise{0%{opacity:0;transform:translate(0,0) rotate(0)}10%{opacity:.55}50%{transform:translate(var(--sway),-55vh) rotate(15deg)}90%{opacity:.35}100%{opacity:0;transform:translate(calc(var(--sway) * -.5),-110vh) rotate(-10deg)}}
+.eq-floor{position:fixed;left:0;right:0;bottom:0;height:22vh;display:flex;align-items:flex-end;gap:4px;padding:0 4px;pointer-events:none;z-index:0;opacity:.55;
+  -webkit-mask:linear-gradient(to top,#000 40%,transparent);mask:linear-gradient(to top,#000 40%,transparent)}
+.eq-floor i{flex:1;height:var(--max);border-radius:6px 6px 0 0;background:linear-gradient(to top,var(--accent),var(--accent2));transform-origin:bottom;animation:eqbar var(--d) ease-in-out var(--del) infinite alternate}
+@keyframes eqbar{from{transform:scaleY(calc(var(--min) / var(--max) * 1))}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.eq-floor i{transform:scaleY(.4)}}
+.w-orbit .wave{position:absolute;inset:10px;border-radius:50%;border:2px solid var(--accent);opacity:0;animation:wave-out 3.2s ease-out infinite}
+.w-orbit .wave.w2{border-color:var(--accent2);animation-delay:.8s}
+.w-orbit .wave.w3{animation-delay:1.6s}
+.w-orbit .wave.w4{border-color:var(--accent2);animation-delay:2.4s}
+@keyframes wave-out{0%{opacity:.8;transform:scale(.9)}100%{opacity:0;transform:scale(2.6)}}
+body.welcome-mode::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60vmax 60vmax at 50% 35%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 60%);animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.4;transform:scale(1)}15%{opacity:1;transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){body.welcome-mode::after{animation:none;opacity:.6}}
 .w-logo{background:none;color:var(--accent)}
 .w-logo span{display:inline-block;animation:drop .7s cubic-bezier(.3,1.6,.5,1) both,wave 3s ease-in-out 1.2s infinite}
 .w-logo span:nth-child(1){color:var(--accent)}.w-logo span:nth-child(2){color:color-mix(in srgb,var(--accent) 67%,var(--accent2))}
