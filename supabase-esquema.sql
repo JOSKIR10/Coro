@@ -14,6 +14,9 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
+-- Colores elegidos por cada persona (para ver su perfil con su paleta)
+alter table public.profiles add column if not exists theme jsonb check (theme is null or (jsonb_typeof(theme) = 'object' and pg_column_size(theme) < 400));
+
 -- Publicaciones (texto + fragmento de 15 s de una vista previa oficial)
 create table if not exists public.posts (
   id bigint generated always as identity primary key,
@@ -62,6 +65,20 @@ do $$ begin
   end if;
 end $$;
 
+-- Álbumes de recomendación (cada persona arma los suyos; máx. 25 canciones y 30 álbumes)
+create table if not exists public.albums (
+  id bigint generated always as identity primary key,
+  user_id uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 60),
+  emoji text check (char_length(emoji) <= 8),
+  note text check (char_length(note) <= 200),
+  link text check (link is null or link = '' or (char_length(link) <= 300 and link ~ '^https://')),
+  songs jsonb not null default '[]' check (jsonb_typeof(songs) = 'array' and jsonb_array_length(songs) <= 25 and pg_column_size(songs) < 40000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists albums_user_idx on public.albums (user_id, updated_at desc);
+
 -- Reportes (solo los ve la administradora desde el panel de Supabase)
 create table if not exists public.reports (
   id bigint generated always as identity primary key,
@@ -79,6 +96,8 @@ alter table public.likes     enable row level security;
 alter table public.top_songs enable row level security;
 alter table public.reports   enable row level security;
 
+alter table public.albums    enable row level security;
+
 -- Lectura pública
 drop policy if exists "perfiles visibles" on public.profiles;
 create policy "perfiles visibles" on public.profiles for select using (true);
@@ -88,6 +107,9 @@ drop policy if exists "likes visibles" on public.likes;
 create policy "likes visibles" on public.likes    for select using (true);
 drop policy if exists "tops visibles" on public.top_songs;
 create policy "tops visibles" on public.top_songs for select using (true);
+
+drop policy if exists "albumes visibles" on public.albums;
+create policy "albumes visibles" on public.albums for select using (true);
 
 -- Escritura solo de lo propio
 drop policy if exists "crear mi perfil" on public.profiles;
@@ -102,6 +124,12 @@ drop policy if exists "dar like" on public.likes;
 create policy "dar like" on public.likes for insert to authenticated with check (user_id = auth.uid());
 drop policy if exists "quitar like" on public.likes;
 create policy "quitar like" on public.likes for delete to authenticated using (user_id = auth.uid());
+drop policy if exists "crear mi album" on public.albums;
+create policy "crear mi album" on public.albums for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "editar mi album" on public.albums;
+create policy "editar mi album" on public.albums for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "borrar mi album" on public.albums;
+create policy "borrar mi album" on public.albums for delete to authenticated using (user_id = auth.uid());
 drop policy if exists "reportar" on public.reports;
 create policy "reportar" on public.reports for insert to authenticated with check (reporter = auth.uid());
 
@@ -116,6 +144,18 @@ begin
 end $$;
 drop trigger if exists posts_rate_limit on public.posts;
 create trigger posts_rate_limit before insert on public.posts for each row execute function public.posts_rate_limit();
+
+-- Máximo 30 álbumes por persona
+create or replace function public.albums_limit() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if (select count(*) from public.albums where user_id = new.user_id) >= 30 then
+    raise exception 'album limit reached';
+  end if;
+  return new;
+end $$;
+drop trigger if exists albums_limit on public.albums;
+create trigger albums_limit before insert on public.albums for each row execute function public.albums_limit();
 
 -- Guardar el Top 10 de un mes de una vez (reemplaza el de ese mes).
 -- Solo se puede editar el mes en curso (con 1 día de margen por las zonas horarias):

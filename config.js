@@ -7,5 +7,10 @@
 // la seguridad la dan las reglas de la base de datos (supabase-esquema.sql).
 window.CORO_CONFIG = {
   supabaseUrl: "",
-  supabaseAnonKey: ""
+  supabaseAnonKey: "",
+  // Botones extra en "Entrar". Activa cada uno también en Supabase > Authentication > Providers.
+  // Opciones: "apple", "facebook". Pon solo los que ya configuraste, por ejemplo: ["facebook"]
+  loginProviders: [],
+  // Permite "Entrar sin cuenta" (hay que activar "Allow anonymous sign-ins" en Supabase > Authentication > Sign In / Providers).
+  allowGuest: true
 };
