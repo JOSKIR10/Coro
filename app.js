@@ -290,11 +290,18 @@ async function searchSongs(term, country) {
   if (searchCache.has(key)) return searchCache.get(key);
   const url = `https://itunes.apple.com/search?media=music&entity=song&limit=25&country=${encodeURIComponent(country)}&term=${encodeURIComponent(term)}`;
   let data, why = "";
-  try { const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status); data = await r.json(); }
-  catch (e1) {
-    why = "fetch: " + (e1?.message || e1);
-    try { data = await jsonp(url); }
-    catch (e2) { const e = new Error(why + " · jsonp: " + (e2?.message || e2)); e.search = true; throw e; }
+  // 1) Por Supabase (funciona en iPhone/Safari, que bloquea pedirle directo a Apple)
+  if (typeof S !== "undefined" && S.searchSongs) {
+    try { data = await S.searchSongs(term, country); } catch (e0) { why = "server: " + (e0?.message || e0) + " · "; }
+  }
+  // 2) Directo a Apple (sirve en computadoras y Android)
+  if (!data) {
+    try { const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status); data = await r.json(); }
+    catch (e1) {
+      why += "fetch: " + (e1?.message || e1);
+      try { data = await jsonp(url); }
+      catch (e2) { throw new Error(why + " · jsonp: " + (e2?.message || e2)); }
+    }
   }
   const out = (data.results || []).filter(r => r.previewUrl && SAFE_MEDIA.test(r.previewUrl)).map(normTrack);
   searchCache.set(key, out);
@@ -738,6 +745,7 @@ async function CloudStore(cfg) {
       const { data, error } = await sb.from("top_songs").select("*").eq("user_id", userId).eq("month", month + "-01").order("position"); err(error);
       return (data || []).map(r => ({ id: r.track_id, name: r.track_name, artist: r.artist_name, art: r.artwork_url, preview: r.preview_url, url: r.track_url }));
     },
+    async searchSongs(term, country) { const { data, error } = await sb.rpc("search_songs", { term, country }); err(error); return data; },
     async topMonths(userId) {
       const { data, error } = await sb.from("top_songs").select("month").eq("user_id", userId).eq("position", 1).order("month", { ascending: false }).limit(120); err(error);
       return (data || []).map(r => String(r.month).slice(0, 7));
