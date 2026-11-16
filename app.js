@@ -166,6 +166,8 @@ const moodEmoji = m => (MOODS.find(x => x[0] === m) || [])[1] || "";
 const trackJson = (tr, start) => ({ id: tr.id, name: tr.name, artist: tr.artist, art: tr.art, preview: tr.preview, url: tr.url, ...(start != null ? { start } : {}) });
 const COVERS = ["💿", "🎧", "🔥", "🌙", "☀️", "💔", "🏃", "🚗", "🌧️", "🎉", "🌊", "🌸", "✨", "🎸", "🎹", "☕"];
 
+// replaceChildren/append nunca deben mostrar "null" o "false" si un hijo es opcional
+for (const m of ["replaceChildren", "append"]) { const orig = Element.prototype[m]; Element.prototype[m] = function (...k) { return orig.apply(this, k.filter(c => c != null && c !== false)); }; }
 function h(tag, attrs, ...kids) {
   const el = document.createElement(tag);
   if (attrs) for (const [k, v] of Object.entries(attrs)) {
@@ -287,9 +289,13 @@ async function searchSongs(term, country) {
   const key = country + "|" + term.toLowerCase();
   if (searchCache.has(key)) return searchCache.get(key);
   const url = `https://itunes.apple.com/search?media=music&entity=song&limit=25&country=${encodeURIComponent(country)}&term=${encodeURIComponent(term)}`;
-  let data;
-  try { const r = await fetch(url); if (!r.ok) throw 0; data = await r.json(); }
-  catch { data = await jsonp(url); }
+  let data, why = "";
+  try { const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status); data = await r.json(); }
+  catch (e1) {
+    why = "fetch: " + (e1?.message || e1);
+    try { data = await jsonp(url); }
+    catch (e2) { const e = new Error(why + " · jsonp: " + (e2?.message || e2)); e.search = true; throw e; }
+  }
   const out = (data.results || []).filter(r => r.previewUrl && SAFE_MEDIA.test(r.previewUrl)).map(normTrack);
   searchCache.set(key, out);
   return out;
@@ -469,6 +475,7 @@ const theme = {
   apply(th) {
     th = th && themeVars(th) ? th : PALETTES[0];
     applyVars(document.documentElement, th);
+    document.documentElement.style.backgroundColor = th.bg; // iPhone a veces no repinta el fondo con variables: lo ponemos directo
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", th.bg);
   },
   set(th) { try { localStorage.setItem("coro_theme", JSON.stringify(th)); } catch {} theme.apply(th); }
@@ -956,7 +963,7 @@ function songSearch(onPick, { selectedId } = {}) {
         const songs = await searchSongs(input.value, state.country);
         if (my !== seq) return;
         results.replaceChildren(...(songs.length ? songs.map(s => trackRow(s, { sel: s.id === selectedId, onclick: () => onPick(s) })) : [h("div", { class: "muted" }, t("no_results"))]));
-      } catch { if (my === seq) results.replaceChildren(h("div", { class: "muted" }, t("error"))); }
+      } catch (e) { if (my === seq) results.replaceChildren(h("div", { class: "muted" }, t("error")), h("div", { class: "muted small", style: "opacity:.7" }, String(e?.message || e).slice(0, 160))); }
     }, 350);
   });
   return h("div", { class: "col" }, input, results);
