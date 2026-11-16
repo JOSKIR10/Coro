@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://itunes.apple.com; connect-src 'self' https://itunes.apple.com https://*.supabase.co wss://*.supabase.co; img-src 'self' data: blob: https://*.mzstatic.com https://*.supabase.co; media-src https://*.apple.com https://*.mzstatic.com; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0f0c1d">
@@ -14,7 +14,7 @@
 <style>
 :root{--bg:#0f0c1d;--card:#1a1630;--card2:#241f40;--text:#f4f1ff;--muted:#a59fc6;--accent:#ff4f8b;--accent2:#7c5cff;--ok:#3ddc97;--line:#2e2850;--glass:rgba(15,12,29,.9);--r:20px}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);transition:background .3s;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+html,body{margin:0;touch-action:manipulation;overscroll-behavior:none;-webkit-text-size-adjust:100%;background:var(--bg);color:var(--text);transition:background .3s;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 a{color:inherit}
 button,input,textarea,select{font:inherit;color:inherit}
@@ -194,8 +194,9 @@ body.welcome-mode{padding-bottom:0}
 .capsule .btn.ghost{background:rgba(255,255,255,.2);color:#fff}
 
 /* ---------- Animaciones vivas ---------- */
-.tap-ripple{position:fixed;z-index:50;pointer-events:none;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--accent);animation:ripple .6s ease-out forwards}
+.tap-ripple{position:absolute;z-index:50;pointer-events:none;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--accent);animation:ripple .6s ease-out forwards}
 .tap-ripple.strong{border-color:var(--accent2);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent);animation-duration:.7s}
+.sound-styles{flex-wrap:wrap}.pw-wrap{position:relative}.pw-wrap input{padding-right:48px}.pw-eye{position:absolute;right:6px;top:0;bottom:0;margin:auto 0;width:40px;height:40px;border:0;border-radius:10px;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer}.pw-eye svg{width:22px;height:22px}.pw-eye[aria-pressed=true]{color:var(--accent)}
 @keyframes ripple{to{transform:scale(5);opacity:0}}
 .welcome{position:relative;z-index:1}
 .eq-floor{position:fixed;left:0;right:0;bottom:0;height:22vh;display:flex;align-items:flex-end;gap:4px;padding:0 4px;pointer-events:none;z-index:0;opacity:.55;

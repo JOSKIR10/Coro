@@ -34,7 +34,7 @@ const DICT = {
     with_apple: "Continuar con Apple", with_facebook: "Continuar con Facebook", or_email: "o con tu correo",
     guest: "Entrar sin cuenta", guest_sub: "Sin correo ni redes. Ojo: si borras la app o cambias de teléfono, pierdes este perfil.",
     settings: "Ajustes", colors: "Tus colores", colors_sub: "Elige una paleta o combina tus propios colores.",
-    c_bg: "Fondo", c_1: "Color 1", c_2: "Color 2", sounds: "Notas musicales al tocar", sounds_sub: "Cada toque suena con una nota suave, en armonía.",
+    c_bg: "Fondo", c_1: "Color 1", c_2: "Color 2", sounds: "Sonidos al tocar", sounds_sub: "Cada toque suena con una nota distinta, siempre en armonía.", sound_style: "Elige el estilo:", snd_marimba: "🪵 Marimba", snd_kalimba: "🎐 Kalimba", snd_bubble: "🫧 Burbujas", snd_drops: "💧 Gotas", snd_synth: "🎹 Synth suave", show_pw: "Mostrar contraseña", hide_pw: "Ocultar contraseña",
     on: "Activado", off: "Silenciado", install: "Instalar Coro en tu teléfono", install_btn: "Instalar app",
     install_ios: "En iPhone: toca el botón Compartir (cuadrado con flecha) y luego \"Agregar a inicio\".",
     install_android: "En Android: toca los ⋮ de Chrome y luego \"Instalar app\" o \"Agregar a pantalla principal\".",
@@ -102,7 +102,7 @@ const DICT = {
     with_apple: "Continue with Apple", with_facebook: "Continue with Facebook", or_email: "or with your email",
     guest: "Continue without an account", guest_sub: "No email or social login. Note: if you delete the app or change phones, you lose this profile.",
     settings: "Settings", colors: "Your colors", colors_sub: "Pick a palette or mix your own colors.",
-    c_bg: "Background", c_1: "Color 1", c_2: "Color 2", sounds: "Musical notes on tap", sounds_sub: "Every tap plays a soft, in-tune note.",
+    c_bg: "Background", c_1: "Color 1", c_2: "Color 2", sounds: "Tap sounds", sounds_sub: "Every tap plays a different note, always in tune.", sound_style: "Pick a style:", snd_marimba: "🪵 Marimba", snd_kalimba: "🎐 Kalimba", snd_bubble: "🫧 Bubbles", snd_drops: "💧 Drops", snd_synth: "🎹 Soft synth", show_pw: "Show password", hide_pw: "Hide password",
     on: "On", off: "Muted", install: "Install Coro on your phone", install_btn: "Install app",
     install_ios: "On iPhone: tap Share (square with arrow), then \"Add to Home Screen\".",
     install_android: "On Android: tap Chrome's ⋮, then \"Install app\" or \"Add to Home screen\".",
@@ -343,48 +343,75 @@ function trackRow(track, opts = {}) {
     opts.extra || null);
 }
 
-// ---------- Notas musicales suaves (Web Audio, escala pentatónica: siempre suenan en armonía) ----------
+// ---------- Sonidos al tocar (Web Audio, escala pentatónica: siempre suenan en armonía) ----------
+// Varios estilos para elegir en Ajustes: marimba, kalimba, burbuja, gotas y sintetizador suave.
+const SOUND_STYLES = ["marimba", "kalimba", "bubble", "drops", "synth"];
 const sfx = (() => {
-  let ctx = null, step = 0;
-  const KEY = "coro_sound";
-  const PENTA = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51]; // Do mayor pentatónica
-  const get = () => { try { return localStorage.getItem(KEY) !== "0"; } catch { return true; } };
-  let on = get();
-  function tone(freq, when, dur, vol) {
-    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
-    o.type = "sine"; o2.type = "triangle"; o.frequency.value = freq; o2.frequency.value = freq * 2;
-    const g2 = ctx.createGain(); g2.gain.value = 0.15;
-    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(ctx.destination);
-    const t0 = ctx.currentTime + when;
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    o.start(t0); o2.start(t0); o.stop(t0 + dur + 0.05); o2.stop(t0 + dur + 0.05);
+  let ctx = null, out = null, step = 0, last = -1;
+  const KEY = "coro_sound", SKEY = "coro_sound_style";
+  const PENTA = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51]; // Do pentatónica
+  const ls = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+  let on = ls(KEY, "1") !== "0";
+  let style = SOUND_STYLES.includes(ls(SKEY, "")) ? ls(SKEY, "") : "marimba";
+  function setup() {
+    ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+    if (!out) { // un poco de eco suave para que suene "en un cuarto" y no plano
+      out = ctx.createGain(); out.gain.value = 1; out.connect(ctx.destination);
+      const d = ctx.createDelay(), fb = ctx.createGain(), wet = ctx.createGain(), lp = ctx.createBiquadFilter();
+      d.delayTime.value = 0.13; fb.gain.value = 0.28; wet.gain.value = 0.22; lp.type = "lowpass"; lp.frequency.value = 2600;
+      out.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(wet); wet.connect(ctx.destination);
+    }
   }
-  function play(kind = "tap") {
+  function partial(type, freq, t0, dur, vol, attack = 0.004, sweep = 0) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0);
+    if (sweep) o.frequency.exponentialRampToValueAtTime(freq * sweep, t0 + dur * 0.6);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(out); o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  // Cada estilo es una "voz": cómo suena una nota
+  const VOICES = {
+    marimba: (f, t0, v) => { partial("sine", f, t0, 0.5, v); partial("sine", f * 4, t0, 0.07, v * 0.35); partial("sine", f * 10, t0, 0.02, v * 0.12); },
+    kalimba: (f, t0, v) => { partial("sine", f, t0, 0.9, v * 0.9, 0.002); partial("sine", f * 5.4, t0, 0.12, v * 0.3); partial("triangle", f * 2, t0, 0.25, v * 0.15); },
+    bubble: (f, t0, v) => { partial("sine", f * 0.7, t0, 0.22, v * 1.1, 0.006, 1.9); },
+    drops: (f, t0, v) => { partial("sine", f * 2, t0, 0.14, v * 0.8, 0.002, 0.55); partial("sine", f * 3, t0 + 0.04, 0.1, v * 0.3, 0.002, 0.6); },
+    synth: (f, t0, v) => { partial("sine", f, t0, 0.4, v); partial("triangle", f * 2, t0, 0.4, v * 0.15, 0.012); }
+  };
+  const note = (i, when, v, st = style) => VOICES[st](PENTA[Math.max(0, Math.min(PENTA.length - 1, i))], ctx.currentTime + when, v);
+  function play(kind = "tap", st = style) {
     if (!on) return;
     try {
-      ctx ||= new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === "suspended") ctx.resume();
-      const v = 0.05;
-      if (kind === "ok") [0, 2, 4, 5].forEach((n, i) => tone(PENTA[n], i * 0.07, 0.6, v));          // guardar / publicar: arpegio
-      else if (kind === "like") { tone(PENTA[4], 0, 0.35, v); tone(PENTA[7], 0.08, 0.5, v); }      // me gusta: salto alegre
-      else if (kind === "soft") tone(PENTA[step++ % 5] / 2, 0, 0.18, v * 0.35);                    // teclear: muy suave
-      else if (kind === "down") { tone(PENTA[3], 0, 0.3, v); tone(PENTA[0], 0.08, 0.45, v); }      // quitar / borrar
-      else { const seq = [0, 1, 2, 3, 4, 3, 2, 1]; tone(PENTA[seq[step++ % seq.length]], 0, 0.4, v); } // toque normal: melodía
+      setup();
+      const v = 0.07;
+      if (kind === "ok") [5, 7, 9, 10].forEach((n, i) => note(n, i * 0.075, v, st));                 // guardar / publicar: arpegio
+      else if (kind === "like") { note(8, 0, v, st); note(10, 0.09, v, st); note(12, 0.18, v * 0.8, st); } // me gusta: salto alegre
+      else if (kind === "soft") note(2 + (step++ % 4), 0, v * 0.3, st);                                // teclear: muy suave
+      else if (kind === "down") { note(8, 0, v, st); note(5, 0.09, v, st); }                         // quitar / borrar
+      else { // toque normal: nota al azar de la escala, sin repetir la anterior, para que nunca suene igual
+        let n; do { n = 5 + Math.floor(Math.random() * 6); } while (n === last); last = n;
+        note(n, 0, v, st);
+      }
     } catch {}
   }
-  return { play, get on() { return on; }, set(v) { on = v; try { localStorage.setItem(KEY, v ? "1" : "0"); } catch {} if (v) play("ok"); } };
+  return {
+    play, get on() { return on; }, get style() { return style; },
+    set(v) { on = v; try { localStorage.setItem(KEY, v ? "1" : "0"); } catch {} if (v) play("ok"); },
+    setStyle(v) { if (!SOUND_STYLES.includes(v)) return; style = v; try { localStorage.setItem(SKEY, v); } catch {} if (on) play("like"); }
+  };
 })();
 document.addEventListener("pointerdown", e => {
   const el = e.target.closest("button, a, select, input[type=range], input[type=color], .track[onclick], .results .track");
   if (!el || el.disabled) return;
+  if (el.dataset.sfx === "none") return;
   sfx.play(el.dataset.sfx || "tap");
 }, { capture: true, passive: true });
 // ---------- Animaciones "vivas" ----------
 const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NOTE_CHARS = ["♪", "♫", "♬", "♩", "𝄞"];
-// Al tocar: una onda suave sale desde el dedo (más intensa al publicar o dar me gusta)
+// Al tocar: una onda suave sale desde el dedo (coordenadas de la página, para que salga justo donde tocas aunque haya scroll o teclado) (más intensa al publicar o dar me gusta)
 function ripple(x, y, strong) {
   if (calm()) return;
   const el = document.createElement("span");
@@ -397,9 +424,12 @@ document.addEventListener("pointerdown", e => {
   const el = e.target.closest("button, a, .results .track");
   if (!el || el.disabled) return;
   const kind = el.dataset.sfx;
-  ripple(e.clientX, e.clientY, kind === "ok" || kind === "like");
+  ripple(e.pageX, e.pageY, kind === "ok" || kind === "like");
   el.classList.remove("boing"); void el.offsetWidth; el.classList.add("boing");
 }, { passive: true });
+// Interfaz fija: sin zoom con pellizco ni doble toque
+["gesturestart", "gesturechange"].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 // Ecualizador que baila en la parte de abajo (bienvenida)
 function eqBars(n = 32) {
   return h("div", { class: "eq-floor", "aria-hidden": "true" }, ...Array.from({ length: n }, (_, i) => {
@@ -1261,7 +1291,9 @@ async function viewSettings(me) {
         h("div", { class: "row", style: "flex-wrap:wrap;gap:10px" }, inp("bg", t("c_bg")), inp("a", t("c_1")), inp("b", t("c_2")))),
       h("div", { class: "card col" },
         h("h2", { style: "margin:0" }, t("sounds")), h("div", { class: "muted small" }, t("sounds_sub")),
-        h("button", { class: "btn" + (sfx.on ? "" : " ghost"), onclick: () => { sfx.set(!sfx.on); renderNav(me); draw(); } }, sfx.on ? "🎵 " + t("on") : "🔇 " + t("off"))),
+        h("button", { class: "btn" + (sfx.on ? "" : " ghost"), onclick: () => { sfx.set(!sfx.on); renderNav(me); draw(); } }, sfx.on ? "🎵 " + t("on") : "🔇 " + t("off")),
+        sfx.on ? h("div", { class: "muted small" }, t("sound_style")) : null,
+        sfx.on ? h("div", { class: "chips sound-styles" }, ...SOUND_STYLES.map(st => h("button", { type: "button", class: "chip" + (sfx.style === st ? " act" : ""), "aria-pressed": String(sfx.style === st), "data-sfx": "none", onclick: () => { sfx.setStyle(st); draw(); } }, t("snd_" + st)))) : null),
       h("div", { class: "card col" }, h("h2", { style: "margin:0" }, t("install")), installBox()));
   };
   draw();
@@ -1403,10 +1435,14 @@ async function viewProfile(me, username, wantMonth, tab) {
   show(tab === "albums" ? 1 : 0);
 }
 
+const EYE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>', EYE_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
 function viewLogin(startSignup) {
   let signup = false;
   const email = h("input", { type: "email", placeholder: t("email"), autocomplete: "email", maxlength: 254 });
   const pass = h("input", { type: "password", placeholder: t("password"), autocomplete: "current-password", minlength: 8, maxlength: 72 });
+  const eye = h("button", { type: "button", class: "pw-eye", "aria-label": t("show_pw"), "aria-pressed": "false", "data-sfx": "soft", html: EYE_SVG });
+  eye.onclick = () => { const show = pass.type === "password"; pass.type = show ? "text" : "password"; eye.innerHTML = show ? EYE_OFF_SVG : EYE_SVG; eye.setAttribute("aria-label", t(show ? "hide_pw" : "show_pw")); eye.setAttribute("aria-pressed", String(show)); pass.focus(); };
+  const passBox = h("div", { class: "pw-wrap" }, pass, eye);
   const go = h("button", { class: "btn" }, t("signin"));
   const sw = h("button", { class: "icon-btn" }, t("no_acc"));
   const title = h("h2", { style: "margin:0" }, t("signin"));
@@ -1434,7 +1470,7 @@ function viewLogin(startSignup) {
     } }, t("guest")),
     h("div", { class: "muted small", style: "text-align:center" }, t("guest_sub")));
   if (startSignup) sw.onclick();
-  $app.replaceChildren(h("a", { class: "icon-btn", href: "#/bienvenida", style: "margin-bottom:8px" }, "← Coro"), h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, pass, go, sw, guest));
+  $app.replaceChildren(h("a", { class: "icon-btn", href: "#/bienvenida", style: "margin-bottom:8px" }, "← Coro"), h("div", { class: "card col" }, title, ...sso, sso.length ? h("div", { class: "muted small", style: "text-align:center" }, t("or_email")) : null, email, passBox, go, sw, guest));
 }
 
 function viewWelcome() {
