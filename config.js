@@ -6,8 +6,8 @@
 // (Project Settings > API). La "anon key" es pública y segura de poner aquí:
 // la seguridad la dan las reglas de la base de datos (supabase-esquema.sql).
 window.CORO_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://hlsjqnsxyrmvvhuvopkr.supabase.co",
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsc2pxbnN4eXJtdnZodXZvcGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3ODYyMDQsImV4cCI6MjExMDM2MjIwNH0.cMi5Owwd-LGNKj7daqujB3pleWUwv9ECKol_XbkyTMo",
   // Botones extra en "Entrar". Activa cada uno también en Supabase > Authentication > Providers.
   // Opciones: "apple", "facebook". Pon solo los que ya configuraste, por ejemplo: ["facebook"]
   loginProviders: [],
